@@ -9,6 +9,14 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: docker
+    directory: "adoptium-marketplace-server/adoptium-repo/docker/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: docker
+    directory: "docker/"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: gitsubmodule
     directory: "/"
     schedule:
       interval: "daily"

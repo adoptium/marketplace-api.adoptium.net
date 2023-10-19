@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Marketplace build
+name: Vendor Validation
 
 on:
   workflow_dispatch:
@@ -12,24 +12,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/setup-java@v2
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        with:
+          submodules: true
+
+      - uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3.13.0
         with:
           java-version: '17'
-          java-package: jdk
-          architecture: x64
           distribution: 'temurin'
+          cache: 'maven'
 
-      - uses: actions/checkout@v3
+      - name: Get submodule SHA
+        id: get-submodule-sha
+        run: echo "SUBMODULE_SHA=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+        working-directory: api.adoptium.net
+  
+      - name: Cache api.adoptium.net build
+        uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        id: cache-api
+        with:
+          path: api.adoptium.net/target
+          key: api-build-${{ steps.get-submodule-sha.outputs.SUBMODULE_SHA }}
+          restore-keys: |
+            api-build-${{ steps.get-submodule-sha.outputs.SUBMODULE_SHA }}
 
       - name: Build api
+        if: steps.cache-api.outputs.cache-hit != 'true'
+        working-directory: api.adoptium.net
         run: ./mvnw --batch-mode clean install -Padoptium -DskipTests
 
-      - name: Build app
-        run: |
-          cd marketplace/
-          ../mvnw --batch-mode clean install  -DskipTests
+      - name: Build marketplace
+        run: ./mvnw --batch-mode clean install -DskipTests
 
       - name: Validate vendors
-        run: |
-          cd marketplace/adoptium-marketplace-vendor-validation
-          VALIDATE_REPO=true ../../mvnw --batch-mode clean test
+        working-directory: adoptium-marketplace-vendor-validation
+        run: VALIDATE_REPO=true ../mvnw --batch-mode clean test
