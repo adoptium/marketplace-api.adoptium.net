@@ -1,0 +1,50 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Marketplace build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: Build api
+      working-directory: api.adoptium.net
+      run: ./mvnw --batch-mode clean install -Padoptium
+
+    - name: Build app
+      run: |
+        ./mvnw --batch-mode clean install
+
+    - name: Upload yaml schema
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        name: schema.yaml
+        path: marketplace/adoptium-marketplace-schema/target/generated/openapi.yaml
+
+    - name: Upload json schema
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        name: schema.json
+        path: marketplace/adoptium-marketplace-schema/target/generated/openapi.json
+
+    - name: Upload example data
+      uses: actions/upload-artifact@v2.3.1
+      with:
+        name: example.json
+        path: marketplace/adoptium-marketplace-schema-tests/src/test/resources/net/adoptium/marketplace/schema/example.json

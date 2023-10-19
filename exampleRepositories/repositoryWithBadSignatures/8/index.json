@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "indexes": [],
+  "releases": [
+    "jdk8u312_b07.json",
+    "jdk8u302_b08.json"
+  ]
+}
