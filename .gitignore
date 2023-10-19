@@ -1,0 +1,13 @@
+.mvn
+.iml
+target/
+adoptium-api.iml
+.idea
+*.iml
+*.log
+.classpath
+.project
+.settings
+.vscode
+.java-version
+runLocalAPI.sh

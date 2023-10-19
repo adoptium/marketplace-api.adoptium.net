@@ -71,7 +71,7 @@ object SignTestAssets {
     @Throws(Exception::class)
     @JvmStatic
     fun main(args: Array<String>) {
-        sign("marketplace/exampleRepositories/")
+        sign("exampleRepositories/")
     }
 
     @Throws(IOException::class)
