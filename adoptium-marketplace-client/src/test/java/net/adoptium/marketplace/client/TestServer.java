@@ -27,7 +27,7 @@ public class TestServer implements BeforeAllCallback, AfterAllCallback {
 
         ResourceHandler resource_handler = new ResourceHandler();
 
-        String repo = searchForRepo("marketplace/exampleRepositories");
+        String repo = searchForRepo("exampleRepositories");
         resource_handler.setResourceBase(new File(repo).getAbsolutePath());
 
         HandlerList handlers = new HandlerList();
