@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Marketplace build
+name: Vendor Validation
 
 on:
   workflow_dispatch:
@@ -12,24 +12,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/setup-java@v2
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        with:
+          submodules: true
+
+      - uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3.13.0
         with:
           java-version: '17'
-          java-package: jdk
-          architecture: x64
           distribution: 'temurin'
-
-      - uses: actions/checkout@v3
+          cache: 'maven'
 
       - name: Build api
         working-directory: api.adoptium.net
         run: ./mvnw --batch-mode clean install -Padoptium -DskipTests
 
       - name: Build app
-        run: |
-          ./mvnw --batch-mode clean install  -DskipTests
+        run: ./mvnw --batch-mode clean install  -DskipTests
 
       - name: Validate vendors
-        run: |
-          cd adoptium-marketplace-vendor-validation
-          VALIDATE_REPO=true ../../mvnw --batch-mode clean test
+        working-directory: adoptium-marketplace-vendor-validation
+        run: VALIDATE_REPO=true ../mvnw --batch-mode clean test

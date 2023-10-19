@@ -16,7 +16,7 @@ This repo contains:
 Build with
 
 ```shell
-../mvnw clean install
+./mvnw clean install
 ```
 
 # Testing
@@ -56,7 +56,7 @@ An example of running this can be seen in RepoTest class in the `adoptium-market
 edit it to add your public key and repo location, then run with:
 
 ```
-VALIDATE_REPO=true ../../mvnw test -Dtest=RepoTest#validateRepo
+VALIDATE_REPO=true ../mvnw test -Dtest=RepoTest#validateRepo
 ```
 
 from inside the `adoptium-marketplace-client` directory.
