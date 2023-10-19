@@ -12,11 +12,12 @@ RUN mkdir /tmp/build
 WORKDIR /tmp/build
 COPY . /tmp/build
 
-RUN ./mvnw clean install -Padoptium -DskipTests && \
-    cd marketplace/ && \
-    ../mvnw clean install -DskipTests && \
+RUN cd api.adoptium.net/ && \
+    ./mvnw clean install -Padoptium -DskipTests && \
+    cd ../ && \
+    ./mvnw clean install -DskipTests && \
     cd adoptium-marketplace-server/adoptium-repo && \
-    ../../../mvnw clean package exec:java
+    ../../mvnw clean package exec:java
 
 FROM nginx
-COPY --from=buildwebsite /tmp/build/marketplace/adoptium-marketplace-server/adoptium-repo/repo /usr/share/nginx/html
+COPY --from=buildwebsite /tmp/build/adoptium-marketplace-server/adoptium-repo/repo /usr/share/nginx/html

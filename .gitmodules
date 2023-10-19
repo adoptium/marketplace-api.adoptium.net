@@ -1,0 +1,5 @@
+[submodule "api.adoptium.net"]
+	path = api.adoptium.net
+	url = https://github.com/adoptium/api.adoptium.net
+	branch = marketplace
+
