@@ -80,7 +80,7 @@
                     <dependency>
                         <groupId>org.jetbrains.kotlin</groupId>
                         <artifactId>kotlin-maven-allopen</artifactId>
-                        <version>1.6.10</version>
+                        <version>1.9.10</version>
                     </dependency>
                 </dependencies>
                 <configuration>
