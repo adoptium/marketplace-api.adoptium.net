@@ -1,36 +1,63 @@
+# Adoptium marketplace
 
-# Adoptium API
+This repo contains:
 
-**NOTICE:** [AdoptOpenJDK API v3](https://github.com/AdoptOpenJDK/openjdk-api-v3/blob/master/README.md) has been deprecated as part of the move to Eclipse Foundation and rebrand to Adoptium.
+- adoptium-marketplace-schema
+    - Schema definition for vendors to advertise their binaries
+- adoptium-marketplace-client
+    - Client library for reading a repository with vendor data
+- adoptium-marketplace-server
+    - Implementation of the adoptium marketplace API
+- exampleRepositories
+    - Examples of a vendor repository
 
-## Overview
+# Build
 
-The Adoptium API provides a way to consume JSON information about the Adoptium Temurin releases and nightly builds.  
-Sign up to the [`#api` Slack channel](https://adoptium.net/slack/) where major API updates will be announced, and visit [adoptium.net](https://adoptium.net) to find out more about the community.
+Build with
 
-## Usage
+```shell
+../mvnw clean install
+```
 
-The API is documented using Swagger.  The Swagger documentation can be viewed at: [api.adoptium.net/swagger-ui](https://api.adoptium.net/swagger-ui).
-The Open API spec for this can be viewed at: [api.adoptium.net/openapi](https://api.adoptium.net/openapi)
+# Testing
 
-For more information, including example queries, please look at the [API cookbook](https://github.com/adoptium/api.adoptium.net/blob/main/docs/cookbook.adoc).
+Tests rely on the data inside the `exampleRepositories` directory in order for tests to pass they must be signed. If you wish to modify test assets they need to be re-signed once they have been modified. The procedure would be as follows:
 
-## Who's using the Adoptium API?
+- Generate test keys
+    - Look in the `exampleRepositories/keys` directory for scripts that detail generating keys
+- Re-sign assets
+    - Run `SignTestAssets` in the `adoptium-marketplace-utils` project.
 
-The Adoptium API (and its predecessor at AdoptOpenJDK) has served over 200 million downloads by a wide variety consumers, from individuals to organizations.
+# Repository validation
 
-Check the [Download Statistics Dashboard](https://dash.adoptium.net/) for the latest numbers.  
+A repository can be validated using the `MarketplaceClient`. The client pulls a repository and validates its contents. For example:
 
-The following list highlights a small subset of consumers and their use-cases:
+```Java
+    String publicKey = "-----BEGIN PUBLIC KEY-----\n" +
+    // Public key string here
+    "-----END PUBLIC KEY-----";
+    String repoUrl = "http://localhost:8080/repo";
 
-- [Adoptium Website](https://adoptium.net/) - the API drives the release listings on the AdoptOpenJDK website allowing individuals to download the JDK distribution of their choice.
-- [Gradle](https://docs.gradle.org/) - the Gradle project defaults to use the API for its [toolchains](https://docs.gradle.org/current/userguide/toolchains.html#sec:provisioning) feature.
-- [Update Watcher for Adoptium & AdoptOpenJDK](https://github.com/tushev/aojdk-updatewatcher) - uses the API to automatically manage the JDK installations on an individual's machine.
+    try {
+        MarketplaceClient client = MarketplaceClient.build(repoUrl, SignatureType.BASE64_ENCODED, publicKey);
+        ReleaseList releaseList = client.readRepositoryData();
+    
+        System.out.println("Found: " + releaseList.getReleases().size() + " releases");
+    } catch (Exception e) {
+        System.err.println("Validation failed");
+        e.printStackTrace();
+    }
+```
 
-## Marketplace
+Note that in this example we have used the default `SignatureType.BASE64_ENCODED` which specifies that the signature files are
+base64 encoded. If you require non-base64 encoded use `SignatureType.SIG`.
 
-See [Marketplace](marketplace/README.md)
+An example of running this can be seen in RepoTest class in the `adoptium-marketplace-client` module. To validate your repo using this test,
+edit it to add your public key and repo location, then run with:
 
-## Development
+```
+VALIDATE_REPO=true ../../mvnw test -Dtest=RepoTest#validateRepo
+```
 
-To learn more about how we build & run the API, check out [CONTRIBUTING.md](CONTRIBUTING.md) and the [FAQs](FAQ.md).
+from inside the `adoptium-marketplace-client` directory.
+
