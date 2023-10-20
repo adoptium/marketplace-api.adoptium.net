@@ -40,7 +40,7 @@ jobs:
       uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
       id: cache-api
       with:
-        path: api.adoptium.net/target
+        path: api.adoptium.net/**/target
         key: api-build-${{ steps.get-submodule-sha.outputs.SUBMODULE_SHA }}
         restore-keys: |
           api-build-${{ steps.get-submodule-sha.outputs.SUBMODULE_SHA }}
