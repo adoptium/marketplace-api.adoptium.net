@@ -1,6 +1,6 @@
 package net.adoptium.marketplace.server.frontend
 
-import javax.ws.rs.NotFoundException
+import jakarta.ws.rs.NotFoundException
 import kotlin.math.min
 
 object Pagination {

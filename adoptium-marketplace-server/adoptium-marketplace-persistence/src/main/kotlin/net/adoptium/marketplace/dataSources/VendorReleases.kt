@@ -8,14 +8,14 @@ import net.adoptium.marketplace.schema.Vendor
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
 
 interface VendorReleasesFactory {
     fun get(vendor: Vendor): VendorReleases
 }
 
-@Singleton
+@ApplicationScoped
 class VendorReleasesFactoryImpl @Inject constructor(
     private val vendorPersistenceFactory: VendorPersistenceFactory
 ) : VendorReleasesFactory {

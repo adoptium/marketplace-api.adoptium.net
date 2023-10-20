@@ -89,7 +89,7 @@
                     <dependency>
                         <groupId>org.jetbrains.kotlin</groupId>
                         <artifactId>kotlin-maven-allopen</artifactId>
-                        <version>1.6.10</version>
+                        <version>1.8.10</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -97,7 +97,7 @@
                         <plugin>all-open</plugin>
                     </compilerPlugins>
                     <pluginOptions>
-                        <option>all-open:annotation=javax.ws.rs.Path</option>
+                        <option>all-open:annotation=jakarta.ws.rs.Path</option>
                     </pluginOptions>
                 </configuration>
             </plugin>

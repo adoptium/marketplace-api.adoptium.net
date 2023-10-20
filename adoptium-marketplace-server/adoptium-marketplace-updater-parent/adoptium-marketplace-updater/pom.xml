@@ -44,7 +44,18 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest</artifactId>
+                </exclusion>
+            </exclusions>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>2.2</version>
         </dependency>
         <dependency>
             <groupId>org.skyscreamer</groupId>
@@ -175,9 +186,8 @@
                         <configuration>
                             <classifier>classes</classifier>
                             <excludes>
-                                <exclude>**/V3Updater**</exclude>
+                                <exclude>**/AdoptiumMarketplaceUpdater**</exclude>
                                 <exclude>**/KickOffUpdate**</exclude>
-                                <exclude>**/UpdateTrigger**</exclude>
                             </excludes>
                         </configuration>
                     </execution>

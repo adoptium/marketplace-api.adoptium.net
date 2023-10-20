@@ -11,10 +11,11 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-
-        <quarkus.version>2.14.0.Final</quarkus.version>
+        <java.version>17</java.version>
+        <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
+        <quarkus.version>3.5.0</quarkus.version>
         <jacoco.version>0.8.8</jacoco.version>
-        <kotlin.version>1.7.21</kotlin.version>
+        <kotlin.version>1.8.10</kotlin.version>
         <adoptiumVersion>3.0.1-SNAPSHOT</adoptiumVersion>
     </properties>
 
@@ -105,7 +106,7 @@
             <dependency>
                 <groupId>io.mockk</groupId>
                 <artifactId>mockk</artifactId>
-                <version>1.13.4</version>
+                <version>1.13.7</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

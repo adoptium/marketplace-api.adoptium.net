@@ -4,13 +4,13 @@ import com.microsoft.applicationinsights.telemetry.Duration
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry
 import net.adoptium.marketplace.ai.AppInsightsTelemetry
 import java.util.*
-import javax.ws.rs.container.ContainerRequestContext
-import javax.ws.rs.container.ContainerRequestFilter
-import javax.ws.rs.container.ContainerResponseContext
-import javax.ws.rs.container.ContainerResponseFilter
-import javax.ws.rs.ext.Provider
-import javax.ws.rs.ext.WriterInterceptor
-import javax.ws.rs.ext.WriterInterceptorContext
+import jakarta.ws.rs.ext.Provider
+import jakarta.ws.rs.ext.WriterInterceptor
+import jakarta.ws.rs.ext.WriterInterceptorContext
+import jakarta.ws.rs.container.ContainerResponseContext
+import jakarta.ws.rs.container.ContainerResponseFilter
+import jakarta.ws.rs.container.ContainerRequestFilter
+import jakarta.ws.rs.container.ContainerRequestContext
 
 private const val START_TIME_KEY = "appInsightsRequestStartTime"
 private const val TELEMETERY_KEY = "appInsightsTelemetery"

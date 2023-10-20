@@ -8,15 +8,15 @@ import net.adoptium.marketplace.server.frontend.models.ReleaseUpdateSummary
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.media.Schema
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter
-import javax.inject.Inject
-import javax.inject.Singleton
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.PathParam
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.PathParam
 
 @Path("/v1/updateStatus")
 @Schema(hidden = true)
-@Singleton
+@ApplicationScoped
 class VendorStatusRoute
 @Inject
 constructor(private val apiDataStore: APIDataStore) {

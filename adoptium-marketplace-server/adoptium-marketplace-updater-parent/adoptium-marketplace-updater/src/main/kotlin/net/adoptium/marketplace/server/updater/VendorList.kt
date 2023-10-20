@@ -2,13 +2,13 @@ package net.adoptium.marketplace.server.updater
 
 import net.adoptium.marketplace.schema.Vendor
 import org.slf4j.LoggerFactory
-import javax.inject.Singleton
+import jakarta.enterprise.context.ApplicationScoped
 
 interface VendorList {
     fun getVendorInfo(): Map<Vendor, VendorInfo>
 }
 
-@Singleton
+@ApplicationScoped
 class DefaultVendorList : VendorList {
 
     companion object {

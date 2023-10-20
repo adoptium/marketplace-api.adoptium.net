@@ -12,13 +12,13 @@ import org.litote.kmongo.id.jackson.IdJacksonModule
 import org.litote.kmongo.reactivestreams.KMongo
 import org.litote.kmongo.util.KMongoConfiguration
 import org.slf4j.LoggerFactory
-import javax.inject.Singleton
+import jakarta.enterprise.context.ApplicationScoped
 
 interface MongoClient {
     fun getDatabase(): CoroutineDatabase
 }
 
-@Singleton
+@ApplicationScoped
 class MongoClientImpl : MongoClient {
     private var db: CoroutineDatabase? = null
 
