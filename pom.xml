@@ -117,7 +117,7 @@
                 <plugin>
                     <artifactId>smallrye-open-api-maven-plugin</artifactId>
                     <groupId>io.smallrye</groupId>
-                    <version>2.1.17</version>
+                    <version>3.6.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jetbrains.kotlin</groupId>
