@@ -186,9 +186,8 @@
                         <configuration>
                             <classifier>classes</classifier>
                             <excludes>
-                                <exclude>**/V3Updater**</exclude>
+                                <exclude>**/AdoptiumMarketplaceUpdater**</exclude>
                                 <exclude>**/KickOffUpdate**</exclude>
-                                <exclude>**/UpdateTrigger**</exclude>
                             </excludes>
                         </configuration>
                     </execution>

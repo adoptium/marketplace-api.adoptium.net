@@ -2,6 +2,10 @@ package net.adoptium.marketplace.server.updater
 
 import io.quarkus.arc.profile.UnlessBuildProfile
 import io.quarkus.runtime.Startup
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.ws.rs.ApplicationPath
+import jakarta.ws.rs.core.Application
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -12,14 +16,9 @@ import net.adoptium.marketplace.dataSources.ModelComparators
 import net.adoptium.marketplace.schema.ReleaseList
 import net.adoptium.marketplace.schema.ReleaseUpdateInfo
 import net.adoptium.marketplace.schema.Vendor
-import net.adoptium.marketplace.server.updater.routes.UpdateTrigger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import jakarta.inject.Inject
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.ws.rs.ApplicationPath
-import jakarta.ws.rs.core.Application
 import kotlin.concurrent.timerTask
 
 @UnlessBuildProfile("test")
@@ -31,13 +30,9 @@ import kotlin.concurrent.timerTask
  */
 class AdoptiumMarketplaceUpdaterApp : Application()
 
-interface Updater {
-    suspend fun update(vendor: Vendor): ReleaseUpdateInfo
-    fun scheduleUpdates()
-}
 
 @ApplicationScoped
-class AdoptiumMarketplaceUpdater @Inject constructor(
+open class AdoptiumMarketplaceUpdater @Inject constructor(
     private val apiDataStore: APIDataStore,
     private val vendorList: VendorList
 ) : Updater {
@@ -60,7 +55,11 @@ class AdoptiumMarketplaceUpdater @Inject constructor(
     private fun buildClientMap(): Map<Vendor, MarketplaceClient> {
         return vendorList.getVendorInfo()
             .map {
-                return@map it.key to MarketplaceClient.build(it.value.getUrl(), it.value.getSignatureType(), it.value.getKey())!!
+                return@map it.key to MarketplaceClient.build(
+                    it.value.getUrl(),
+                    it.value.getSignatureType(),
+                    it.value.getKey()
+                )!!
             }.toMap()
     }
 
@@ -105,7 +104,11 @@ class AdoptiumMarketplaceUpdater @Inject constructor(
         }
     }
 
-    private suspend fun logInfoAboutUpdate(vendor: Vendor, newReleases: ReleaseUpdateInfo, releasesBeforeUpdate: ReleaseList? = null) {
+    private suspend fun logInfoAboutUpdate(
+        vendor: Vendor,
+        newReleases: ReleaseUpdateInfo,
+        releasesBeforeUpdate: ReleaseList? = null
+    ) {
         if (newReleases.errorMessage != null) {
             LOGGER.error(newReleases.errorMessage);
             return
