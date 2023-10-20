@@ -9,10 +9,10 @@ import net.adoptium.marketplace.schema.Vendor
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition
 import org.eclipse.microprofile.openapi.annotations.info.Info
 import org.eclipse.microprofile.openapi.annotations.servers.Server
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.ws.rs.ApplicationPath
-import javax.ws.rs.core.Application
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.ws.rs.ApplicationPath
+import jakarta.ws.rs.core.Application
 
 @UnlessBuildProfile("test")
 @ApplicationScoped

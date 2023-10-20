@@ -3,8 +3,8 @@ package net.adoptium.marketplace.client;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -28,10 +28,15 @@ public class TestServer implements BeforeAllCallback, AfterAllCallback {
         ResourceHandler resource_handler = new ResourceHandler();
 
         String repo = searchForRepo("exampleRepositories");
-        resource_handler.setResourceBase(new File(repo).getAbsolutePath());
+        resource_handler.setBaseResourceAsString(new File(repo).getAbsolutePath());
 
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[]{resource_handler, new DefaultHandler()});
+        // Using ContextHandlerCollection instead of HandlerList
+        ContextHandlerCollection handlers = new ContextHandlerCollection();
+        handlers.setHandlers(new Handler[]{resource_handler});
+
+        // Set DefaultHandler directly on the server
+        server.setDefaultHandler(new DefaultHandler());
+        
         server.setHandler(handlers);
         server.start();
     }

@@ -13,7 +13,7 @@ import net.adoptium.marketplace.dataSources.TimeSource
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import javax.ws.rs.ext.Provider
+import jakarta.ws.rs.ext.Provider
 
 /*
 @Provider

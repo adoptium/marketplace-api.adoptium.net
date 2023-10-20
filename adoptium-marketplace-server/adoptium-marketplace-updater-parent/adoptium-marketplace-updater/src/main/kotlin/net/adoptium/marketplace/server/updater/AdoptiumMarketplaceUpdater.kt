@@ -16,11 +16,10 @@ import net.adoptium.marketplace.server.updater.routes.UpdateTrigger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.inject.Singleton
-import javax.ws.rs.ApplicationPath
-import javax.ws.rs.core.Application
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.ws.rs.ApplicationPath
+import jakarta.ws.rs.core.Application
 import kotlin.concurrent.timerTask
 
 @UnlessBuildProfile("test")
@@ -32,26 +31,12 @@ import kotlin.concurrent.timerTask
  */
 class AdoptiumMarketplaceUpdaterApp : Application()
 
-@UnlessBuildProfile("test")
-@Singleton
-@Startup
-/**
- * Init application tasks
- */
-class KickOffUpdate @Inject constructor(
-    adoptiumMarketplaceUpdater: AdoptiumMarketplaceUpdater
-) {
-    init {
-        adoptiumMarketplaceUpdater.scheduleUpdates()
-    }
-}
-
 interface Updater {
     suspend fun update(vendor: Vendor): ReleaseUpdateInfo
     fun scheduleUpdates()
 }
 
-@Singleton
+@ApplicationScoped
 class AdoptiumMarketplaceUpdater @Inject constructor(
     private val apiDataStore: APIDataStore,
     private val vendorList: VendorList

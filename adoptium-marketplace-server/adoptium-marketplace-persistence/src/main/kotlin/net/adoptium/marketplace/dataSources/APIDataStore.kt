@@ -1,14 +1,14 @@
 package net.adoptium.marketplace.dataSources
 
 import net.adoptium.marketplace.schema.Vendor
-import javax.inject.Inject
-import javax.inject.Singleton
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
 
 interface APIDataStore {
     fun getReleases(vendor: Vendor): VendorReleases
 }
 
-@Singleton
+@ApplicationScoped
 class APIDataStoreImpl @Inject constructor(private val vendorReleasesFactory: VendorReleasesFactory) : APIDataStore {
 
     private val vendorReleases: MutableMap<Vendor, VendorReleases> = mutableMapOf()

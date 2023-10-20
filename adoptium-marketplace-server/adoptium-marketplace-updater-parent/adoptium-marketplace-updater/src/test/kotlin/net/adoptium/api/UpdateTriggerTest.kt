@@ -33,14 +33,14 @@ import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.id.jackson.IdJacksonModule
 import org.litote.kmongo.reactivestreams.KMongo
 import org.litote.kmongo.util.KMongoConfiguration
-import javax.annotation.Priority
-import javax.enterprise.inject.Alternative
-import javax.inject.Singleton
-import javax.ws.rs.core.Response
+import jakarta.annotation.Priority
+import jakarta.enterprise.inject.Alternative
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.ws.rs.core.Response
 
 @Priority(1)
 @Alternative
-@Singleton
+@ApplicationScoped
 class MockVendorList : VendorList {
     override fun getVendorInfo(): Map<Vendor, VendorInfo> {
         return mapOf(
@@ -51,7 +51,7 @@ class MockVendorList : VendorList {
 
 @Priority(1)
 @Alternative
-@Singleton
+@ApplicationScoped
 class FongoClient : MongoClient {
 
     private val settingsBuilder: MongoClientSettings.Builder = MongoClientSettings.builder()
