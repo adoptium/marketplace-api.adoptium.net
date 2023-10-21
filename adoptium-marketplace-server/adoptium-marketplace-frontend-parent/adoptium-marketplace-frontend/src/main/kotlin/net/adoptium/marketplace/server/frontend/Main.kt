@@ -3,7 +3,7 @@ package net.adoptium.marketplace.server.frontend
 import io.quarkus.runtime.Quarkus
 
 import io.quarkus.runtime.annotations.QuarkusMain
-import net.adoptium.api.marketplace.ai.AppInsightsTelemetry
+import net.adoptium.marketplace.ai.AppInsightsTelemetry
 
 @QuarkusMain
 object Main {
