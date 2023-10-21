@@ -131,6 +131,10 @@
             <artifactId>quarkus-logging-logback</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>net.adoptium.marketplace</groupId>
             <artifactId>adoptium-marketplace-schema</artifactId>
         </dependency>
@@ -145,10 +149,6 @@
         <dependency>
             <groupId>net.adoptium.marketplace.server.frontend</groupId>
             <artifactId>adoptium-marketplace-version-utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.azure</groupId>
-            <artifactId>applicationinsights-core</artifactId>
         </dependency>
         <dependency>
             <groupId>net.adoptium.marketplace.server.frontend</groupId>
