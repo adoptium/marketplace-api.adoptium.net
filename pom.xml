@@ -95,13 +95,13 @@
 
             <dependency>
                 <groupId>com.microsoft.azure</groupId>
-                <artifactId>applicationinsights-core</artifactId>
-                <version>3.4.17</version>
+                <artifactId>applicationinsights-runtime-attach</artifactId>
+                <version>3.3.1</version>
             </dependency>
             <dependency>
-                <groupId>com.microsoft.azure</groupId>
-                <artifactId>applicationinsights-logging-logback</artifactId>
-                <version>2.6.4</version>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-api</artifactId>
+                <version>1.16.0</version>
             </dependency>
             <dependency>
                 <groupId>io.mockk</groupId>
