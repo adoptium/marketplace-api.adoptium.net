@@ -1,0 +1,40 @@
+name: Build Marketplace
+description: Sets up Java, Maven Cache and builds the Marketplace.
+inputs:
+    RUN_TESTS:
+      description: 'Run Maven Tests'
+      default: 'false'
+      required: true
+
+runs:
+  using: composite
+  steps:
+  - uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # v3.13.0
+    with:
+      java-version: 21
+      distribution: temurin
+      cache: maven
+
+  - name: Get submodule SHA
+    shell: bash
+    id: get-submodule-sha
+    run: echo "SUBMODULE_SHA=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+    working-directory: api.adoptium.net
+
+  - name: Cache api.adoptium.net packages
+    uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+    id: cache-api
+    with:
+      path: ~/.m2/repository/net/adoptium/api
+      key: maven-repo-${{ steps.get-submodule-sha.outputs.SUBMODULE_SHA }}
+      restore-keys: maven-repo-${{ steps.get-submodule-sha.outputs.SUBMODULE_SHA }}
+
+  - name: Build api
+    shell: bash
+    if: steps.cache-api.outputs.cache-hit != 'true'
+    working-directory: api.adoptium.net
+    run: ./mvnw --batch-mode clean install -Padoptium -DskipTests=${{ inputs.RUN_TESTS }}
+
+  - name: Build marketplace
+    shell: bash
+    run: ./mvnw --batch-mode clean install -DskipTests=${{ inputs.RUN_TESTS }}
