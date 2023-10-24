@@ -4,6 +4,10 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/build-marketplace"
+    schedule:
+      interval: "daily"
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
