@@ -5,6 +5,10 @@ inputs:
       description: 'Run Maven Tests'
       default: 'false'
       required: true
+    WORKING_DIRECTORY:
+      description: 'Working directory for the steps'
+      required: true
+      default: '.'
 
 runs:
   using: composite
@@ -19,7 +23,7 @@ runs:
     shell: bash
     id: get-submodule-sha
     run: echo "SUBMODULE_SHA=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-    working-directory: api.adoptium.net
+    working-directory: ${{ inputs.WORKING_DIRECTORY }}/api.adoptium.net
 
   - name: Cache api.adoptium.net packages
     uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
@@ -32,9 +36,10 @@ runs:
   - name: Build api
     shell: bash
     if: steps.cache-api.outputs.cache-hit != 'true'
-    working-directory: api.adoptium.net
+    working-directory: ${{ inputs.WORKING_DIRECTORY }}/api.adoptium.net
     run: ./mvnw --batch-mode clean install -Padoptium -DskipTests=${{ inputs.RUN_TESTS }}
 
   - name: Build marketplace
     shell: bash
+    working-directory: ${{ inputs.WORKING_DIRECTORY }}
     run: ./mvnw --batch-mode clean install -DskipTests=${{ inputs.RUN_TESTS }}
