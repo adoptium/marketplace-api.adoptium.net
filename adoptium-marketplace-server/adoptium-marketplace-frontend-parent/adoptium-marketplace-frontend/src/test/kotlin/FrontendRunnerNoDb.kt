@@ -4,7 +4,7 @@ import org.awaitility.Awaitility
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 @QuarkusTest
 @Disabled("For manual execution")

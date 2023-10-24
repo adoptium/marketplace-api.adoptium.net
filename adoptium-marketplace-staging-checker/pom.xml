@@ -3,17 +3,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.adoptium.marketplace.server.updater</groupId>
-        <artifactId>adoptium-marketplace-updater-parent</artifactId>
+        <groupId>net.adoptium.marketplace</groupId>
+        <artifactId>adoptium-marketplace-schema-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>adoptium-marketplace-updater</artifactId>
+    <artifactId>adoptium-marketplace-staging-checker</artifactId>
 
     <properties>
+        <main.class>net.adoptium.marketplace.Main</main.class>
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <quarkus.package.runner-suffix>-jar-with-dependencies</quarkus.package.runner-suffix>
+        <kotlin.version>1.9.20-RC</kotlin.version>
     </properties>
 
     <dependencies>
@@ -27,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
-            <artifactId>kotlinx-coroutines-core-jvm</artifactId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.weld.se</groupId>
@@ -36,18 +38,7 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.hamcrest</groupId>
-                    <artifactId>hamcrest</artifactId>
-                </exclusion>
-            </exclusions>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>2.2</version>
         </dependency>
         <dependency>
             <groupId>org.skyscreamer</groupId>
@@ -69,15 +60,6 @@
                     <artifactId>slf4j-simple</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.mockk</groupId>
-            <artifactId>mockk</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.mockk</groupId>
-            <artifactId>mockk-jvm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
@@ -129,36 +111,34 @@
             <artifactId>quarkus-logging-logback</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.adoptium.marketplace.server</groupId>
-            <artifactId>adoptium-marketplace-persistence</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.skyscreamer</groupId>
+            <artifactId>jsonassert</artifactId>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.adoptium.marketplace</groupId>
-            <artifactId>adoptium-marketplace-client</artifactId>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.adoptium.marketplace</groupId>
-            <artifactId>adoptium-marketplace-client</artifactId>
-            <classifier>tests</classifier>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>net.adoptium.marketplace.server</groupId>
-            <artifactId>adoptium-marketplace-persistence</artifactId>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <scope>test</scope>
+            <groupId>net.adoptium.api</groupId>
+            <artifactId>adoptium-http-client-datasource</artifactId>
+            <version>3.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -178,8 +158,9 @@
                         <configuration>
                             <classifier>classes</classifier>
                             <excludes>
-                                <exclude>**/AdoptiumMarketplaceUpdater**</exclude>
+                                <exclude>**/V3Updater**</exclude>
                                 <exclude>**/KickOffUpdate**</exclude>
+                                <exclude>**/UpdateTrigger**</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -197,6 +178,30 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jvmTarget>1.8</jvmTarget>
+                </configuration>
             </plugin>
         </plugins>
     </build>

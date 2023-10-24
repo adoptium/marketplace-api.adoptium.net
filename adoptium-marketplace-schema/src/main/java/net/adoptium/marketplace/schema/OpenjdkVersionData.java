@@ -150,7 +150,8 @@ public class OpenjdkVersionData implements Comparable<OpenjdkVersionData> {
     @Schema(hidden = true)
     @JsonIgnore
     public boolean isLts() {
-        return major == 8 || ((major - 11) % 6) == 0;
+        // Calculate LTS based on 2-year schedule
+        return major == 8 || major == 11 || major == 17 ||  ((major - 17) % 4) == 0;
     }
 
     @Override

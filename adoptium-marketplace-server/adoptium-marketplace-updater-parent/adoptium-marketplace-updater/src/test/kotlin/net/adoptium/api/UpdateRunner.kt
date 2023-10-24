@@ -20,7 +20,7 @@ class UpdateRunner {
     @Test
     @Disabled("For Manual Testing")
     fun run(apiDataStore: APIDataStore) {
-        MongoTest.startFongo(22222)
+        MongoTest.startFongo()
 
         val adoptiumMarketplaceUpdater = AdoptiumMarketplaceUpdater(apiDataStore, MockVendorList())
         adoptiumMarketplaceUpdater.scheduleUpdates()

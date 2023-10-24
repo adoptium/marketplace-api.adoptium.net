@@ -8,14 +8,14 @@ import net.adoptium.marketplace.schema.ReleaseList
 import net.adoptium.marketplace.schema.ReleaseUpdateInfo
 import net.adoptium.marketplace.schema.Vendor
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
 
 interface VendorPersistenceFactory {
     fun get(vendor: Vendor): VendorPersistence
 }
 
-@Singleton
+@ApplicationScoped
 class DefaultVendorPersistenceFactory @Inject constructor(
     var mongoClient: MongoClient
 ) : VendorPersistenceFactory {

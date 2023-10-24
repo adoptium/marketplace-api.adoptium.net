@@ -11,10 +11,11 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-
-        <quarkus.version>2.14.0.Final</quarkus.version>
+        <java.version>17</java.version>
+        <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
+        <quarkus.version>3.5.0</quarkus.version>
         <jacoco.version>0.8.8</jacoco.version>
-        <kotlin.version>1.7.21</kotlin.version>
+        <kotlin.version>1.8.10</kotlin.version>
         <adoptiumVersion>3.0.1-SNAPSHOT</adoptiumVersion>
     </properties>
 
@@ -28,6 +29,7 @@
         <module>adoptium-marketplace-utils</module>
         <module>adoptium-marketplace-server</module>
         <module>adoptium-marketplace-vendor-validation</module>
+        <module>adoptium-marketplace-staging-checker</module>
     </modules>
 
     <dependencyManagement>
@@ -94,18 +96,18 @@
 
             <dependency>
                 <groupId>com.microsoft.azure</groupId>
-                <artifactId>applicationinsights-core</artifactId>
-                <version>2.6.4</version>
+                <artifactId>applicationinsights-runtime-attach</artifactId>
+                <version>3.4.17</version>
             </dependency>
             <dependency>
-                <groupId>com.microsoft.azure</groupId>
-                <artifactId>applicationinsights-logging-logback</artifactId>
-                <version>2.6.4</version>
+                <groupId>io.opentelemetry</groupId>
+                <artifactId>opentelemetry-api</artifactId>
+                <version>1.31.0</version>
             </dependency>
             <dependency>
                 <groupId>io.mockk</groupId>
                 <artifactId>mockk</artifactId>
-                <version>1.13.4</version>
+                <version>1.13.8</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -116,7 +118,7 @@
                 <plugin>
                     <artifactId>smallrye-open-api-maven-plugin</artifactId>
                     <groupId>io.smallrye</groupId>
-                    <version>2.1.17</version>
+                    <version>3.6.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jetbrains.kotlin</groupId>
@@ -128,7 +130,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
+                <version>3.2.1</version>
             </plugin>
         </plugins>
     </build>

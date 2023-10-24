@@ -3,7 +3,7 @@ package net.adoptium.marketplace.client;
 import net.adoptium.marketplace.client.signature.FailedToValidateSignatureException;
 import net.adoptium.marketplace.client.signature.SignatureVerifier;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

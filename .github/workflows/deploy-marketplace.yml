@@ -1,0 +1,50 @@
+name: Docker Build (Marketplace)
+
+on:
+  workflow_dispatch:
+  push:
+   branches: [ main, production ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  docker-build:
+    if: startsWith(github.repository, 'adoptium/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+            submodules: true
+
+      - name: Login to Azure
+        uses: ./api.adoptium.net/.github/actions/azure-login
+        with:
+          AZURE_CLIENT_ID_OIDC: ${{ secrets.AZURE_CLIENT_ID_OIDC }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: Detect Branch
+        run: |
+          case ${GITHUB_REF##*/} in
+            production) echo "NAMESPACE=marketplace" >> $GITHUB_ENV ;;
+            *) echo "NAMESPACE=marketplace-staging" >> $GITHUB_ENV ;;
+          esac
+
+      - name: Build container image and push to Azure
+        uses: ./api.adoptium.net/.github/actions/docker-build
+        with:
+          DOCKER_REPO: adoptopenjdkacr.azurecr.io/adoptium-${{ env.NAMESPACE }}
+          DOCKER_FILE: ./docker/Dockerfile
+
+      - name: Redeploy Kubernetes Updater and Frontend
+        uses: ./api.adoptium.net/.github/actions/kubectl-redeploy
+        with:
+          NAMESPACE: ${{ env.NAMESPACE }}

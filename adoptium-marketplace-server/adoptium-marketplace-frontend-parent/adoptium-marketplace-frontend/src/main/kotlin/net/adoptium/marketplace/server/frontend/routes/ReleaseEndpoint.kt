@@ -18,11 +18,11 @@ import net.adoptium.marketplace.server.frontend.models.SortMethod
 import net.adoptium.marketplace.server.frontend.models.SortOrder
 import net.adoptium.marketplace.server.frontend.versions.FailedToParse
 import java.util.function.Predicate
-import javax.inject.Inject
-import javax.inject.Singleton
-import javax.ws.rs.BadRequestException
+import jakarta.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.ws.rs.BadRequestException
 
-@Singleton
+@ApplicationScoped
 class ReleaseEndpoint
 @Inject
 constructor(private val apiDataStore: APIDataStore) {
