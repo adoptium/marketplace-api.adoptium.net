@@ -15,7 +15,7 @@
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <quarkus.version>3.5.0</quarkus.version>
         <jacoco.version>0.8.8</jacoco.version>
-        <kotlin.version>1.9.20-RC2</kotlin.version>
+        <kotlin.version>1.9.20</kotlin.version>
         <adoptiumVersion>3.0.1-SNAPSHOT</adoptiumVersion>
     </properties>
 
@@ -97,7 +97,7 @@
             <dependency>
                 <groupId>com.microsoft.azure</groupId>
                 <artifactId>applicationinsights-runtime-attach</artifactId>
-                <version>3.4.17</version>
+                <version>3.4.18</version>
             </dependency>
             <dependency>
                 <groupId>io.opentelemetry</groupId>
@@ -118,7 +118,7 @@
                 <plugin>
                     <artifactId>smallrye-open-api-maven-plugin</artifactId>
                     <groupId>io.smallrye</groupId>
-                    <version>3.6.2</version>
+                    <version>3.7.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jetbrains.kotlin</groupId>

@@ -1,15 +1,6 @@
-import com.fasterxml.jackson.module.kotlin.readValue
-import net.adoptium.api.v3.JsonMapper
 import net.adoptium.api.v3.models.Release
-import net.adoptium.api.v3.parser.VersionParser
-import net.adoptium.marketplace.client.MarketplaceMapper
 import net.adoptium.marketplace.schema.*
-import org.eclipse.jetty.client.HttpClient
 import org.junit.jupiter.api.Test
-import java.io.File
-import java.io.FileWriter
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.*
 
 class ExtractAdoptiumReleases {
@@ -24,13 +15,43 @@ class ExtractAdoptiumReleases {
         ExtractReleases().buildRepo(
             VERSIONS,
             { version -> "https://api.adoptium.net/v3/assets/feature_releases/${version}/ga?page_size=50&vendor=eclipse" },
-            { release -> toMarketplaceRelease(release, toMarketplaceBinaries(release)) },
+            this::convertToMarketplaceSchema,
             "/tmp/adoptiumRepo",
             true
         )
     }
 
-    private fun toMarketplaceRelease(release: Release, binaries: List<Binary>): net.adoptium.marketplace.schema.Release {
+    private fun convertToMarketplaceSchema(
+        releases: List<Release>
+    ): List<ReleaseList> {
+        val marketplaceReleases = releases
+            .map { release ->
+                ReleaseList(listOf(toMarketplaceRelease(release, toMarketplaceBinaries(release))))
+            }
+            .toList()
+        return mergeSimilarReleases(marketplaceReleases)
+    }
+
+    private fun mergeSimilarReleases(marketplaceReleases: List<ReleaseList>): List<ReleaseList> {
+        // This can happen as Adoptium versions and OpenJDK versions are not 1:1, Adoptium can create multiple releases
+        // with different "Adoptium build number" that map to the same OpenJDK version. These releases need to be merged together
+        // as the marketplace is based on OpenJDK version
+        return marketplaceReleases
+            .flatMap { release ->
+                release.releases
+            }
+            .groupBy { Triple(it.openjdkVersionData, it.releaseLink, it.releaseName) }
+            .map {
+                ReleaseList(it.value)
+            }
+            .toList()
+    }
+
+
+    private fun toMarketplaceRelease(
+        release: Release,
+        binaries: List<Binary>
+    ): net.adoptium.marketplace.schema.Release {
         return Release(
             release.release_link,
             release.release_name,
@@ -92,14 +113,15 @@ class ExtractAdoptiumReleases {
                     binary.`package`.signature_link
                 ),
                 if (binary.installer != null) {
-                    listOf(Installer(
-                        binary.installer!!.name,
-                        binary.installer!!.link,
-                        binary.installer!!.checksum,
-                        binary.installer!!.checksum_link,
-                        binary.installer!!.signature_link,
-                        null
-                    )
+                    listOf(
+                        Installer(
+                            binary.installer!!.name,
+                            binary.installer!!.link,
+                            binary.installer!!.checksum,
+                            binary.installer!!.checksum_link,
+                            binary.installer!!.signature_link,
+                            null
+                        )
                     )
                 } else null,
                 Date.from(binary.updated_at.dateTime.toInstant()),
