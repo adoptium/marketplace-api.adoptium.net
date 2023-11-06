@@ -42,7 +42,16 @@ class ExtractAdoptiumReleases {
             }
             .groupBy { Triple(it.openjdkVersionData, it.releaseLink, it.releaseName) }
             .map {
-                ReleaseList(it.value)
+                ReleaseList(
+                    listOf(
+                        Release(
+                            it.value[0],
+                            it.value
+                                .flatMap { release -> release.binaries }
+                                .toList()
+                        )
+                    )
+                )
             }
             .toList()
     }
