@@ -6,6 +6,7 @@ import net.adoptium.marketplace.client.MarketplaceMapper
 import net.adoptium.marketplace.schema.IndexFile
 import net.adoptium.marketplace.schema.ReleaseList
 import org.eclipse.jetty.client.HttpClient
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileWriter
 import java.nio.file.Path
@@ -13,12 +14,18 @@ import java.nio.file.Paths
 
 class ExtractReleases {
 
+    companion object {
+        @JvmStatic
+        private val LOGGER = LoggerFactory.getLogger(this::class.java)
+    }
+
     fun buildRepo(
         versions: List<Int>,
         apiUrl: (Int) -> String,
-        dataMapper: (releases: Release) -> net.adoptium.marketplace.schema.Release,
+        convertToMarketplaceSchema:(releases: List<Release>) -> List<ReleaseList>,
         outputDir: String,
-        signAssets: Boolean) {
+        signAssets: Boolean
+    ) {
         val httpClient = HttpClient()
         httpClient.isFollowRedirects = true
         httpClient.start()
@@ -40,7 +47,7 @@ class ExtractReleases {
                 val releases = getAdoptiumReleases(apiUrl, httpClient, version)
 
                 // Represent Adoptium releases in Marketplace schema
-                val marketplaceReleases = convertToMarketplaceSchema(releases, dataMapper)
+                val marketplaceReleases = convertToMarketplaceSchema(releases)
 
                 // Create index file i.e './8/index.json
                 val indexFile = IndexFile(
@@ -55,18 +62,26 @@ class ExtractReleases {
                 }
                 val indexfw = FileWriter(file)
                 indexfw.use {
-                    it.write(MarketplaceMapper.repositoryObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(indexFile))
+                    it.write(
+                        MarketplaceMapper.repositoryObjectMapper.writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(indexFile)
+                    )
                 }
 
                 // Write all releases to file
                 marketplaceReleases
                     .forEach { release ->
                         // write to file, i.e ./8/jdk8u302_b08.json
-                        val fos = FileWriter(Paths.get(versionDir.absolutePath, toFileName(release.releases.first())).toFile())
+                        val fos = FileWriter(
+                            Paths.get(versionDir.absolutePath, toFileName(release.releases.first())).toFile()
+                        )
 
                         // Serialize object to file
                         fos.use {
-                            it.write(MarketplaceMapper.repositoryObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(release))
+                            it.write(
+                                MarketplaceMapper.repositoryObjectMapper.writerWithDefaultPrettyPrinter()
+                                    .writeValueAsString(release)
+                            )
                         }
                     }
             }
@@ -101,17 +116,11 @@ class ExtractReleases {
 
         val indexfw = FileWriter(Paths.get(dir.toFile().absolutePath, "index.json").toFile())
         indexfw.use {
-            it.write(MarketplaceMapper.repositoryObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(indexFile))
+            it.write(
+                MarketplaceMapper.repositoryObjectMapper.writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(indexFile)
+            )
         }
-    }
-
-    private fun convertToMarketplaceSchema(releases: List<Release>, dataMapper: (releases: Release) -> net.adoptium.marketplace.schema.Release): List<ReleaseList> {
-        val marketplaceReleases = releases
-            .map { release ->
-                ReleaseList(listOf(dataMapper(release)))
-            }
-            .toList()
-        return marketplaceReleases
     }
 
     private fun filterValidVersions(release: Release): Boolean {
@@ -119,9 +128,11 @@ class ExtractReleases {
             11 -> {
                 VersionParser.parse("11.0.14.1+1")
             }
+
             17 -> {
                 VersionParser.parse("17.0.2+8")
             }
+
             else -> {
                 VersionParser.parse("jdk8u322-b06")
             }
@@ -140,7 +151,7 @@ class ExtractReleases {
             .map { release ->
                 val filteredBinaries = release.binaries.filter {
                     it.image_type == net.adoptium.api.v3.models.ImageType.jdk ||
-                        it.image_type == net.adoptium.api.v3.models.ImageType.jre
+                            it.image_type == net.adoptium.api.v3.models.ImageType.jre
                 }
 
                 Release(release, filteredBinaries.toTypedArray())
