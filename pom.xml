@@ -13,7 +13,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
-        <quarkus.version>3.6.4</quarkus.version>
+        <quarkus.version>3.6.5</quarkus.version>
         <jacoco.version>0.8.8</jacoco.version>
         <kotlin.version>1.9.22</kotlin.version>
         <adoptiumVersion>3.0.1-SNAPSHOT</adoptiumVersion>
