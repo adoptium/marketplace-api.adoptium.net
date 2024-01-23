@@ -29,19 +29,19 @@ jobs:
       uses: ./.github/actions/build-marketplace
 
     - name: Upload yaml schema
-      uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6 # v4.2.0
+      uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
       with:
         name: schema.yaml
         path: adoptium-marketplace-schema/target/generated/openapi.yaml
 
     - name: Upload json schema
-      uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6 # v4.2.0
+      uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
       with:
         name: schema.json
         path: adoptium-marketplace-schema/target/generated/openapi.json
 
     - name: Upload example data
-      uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6 # v4.2.0
+      uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
       with:
         name: example.json
         path: adoptium-marketplace-schema-tests/src/test/resources/net/adoptium/marketplace/schema/example.json
