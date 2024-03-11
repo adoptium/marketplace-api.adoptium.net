@@ -13,9 +13,9 @@
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
-        <quarkus.version>3.5.0</quarkus.version>
+        <quarkus.version>3.8.2</quarkus.version>
         <jacoco.version>0.8.8</jacoco.version>
-        <kotlin.version>1.9.20</kotlin.version>
+        <kotlin.version>1.9.23</kotlin.version>
         <adoptiumVersion>3.0.1-SNAPSHOT</adoptiumVersion>
     </properties>
 
@@ -97,17 +97,17 @@
             <dependency>
                 <groupId>com.microsoft.azure</groupId>
                 <artifactId>applicationinsights-runtime-attach</artifactId>
-                <version>3.4.18</version>
+                <version>3.5.0</version>
             </dependency>
             <dependency>
                 <groupId>io.opentelemetry</groupId>
                 <artifactId>opentelemetry-api</artifactId>
-                <version>1.31.0</version>
+                <version>1.36.0</version>
             </dependency>
             <dependency>
                 <groupId>io.mockk</groupId>
                 <artifactId>mockk</artifactId>
-                <version>1.13.8</version>
+                <version>1.13.10</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -118,7 +118,7 @@
                 <plugin>
                     <artifactId>smallrye-open-api-maven-plugin</artifactId>
                     <groupId>io.smallrye</groupId>
-                    <version>3.7.0</version>
+                    <version>3.10.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jetbrains.kotlin</groupId>
@@ -130,7 +130,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.2.5</version>
             </plugin>
         </plugins>
     </build>
