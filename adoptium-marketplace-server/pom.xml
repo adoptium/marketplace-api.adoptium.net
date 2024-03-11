@@ -136,7 +136,7 @@
                 <plugin>
                     <groupId>org.apache.maven.shared</groupId>
                     <artifactId>maven-filtering</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.3.2</version>
                 </plugin>
                 <!-- Moving to 3.0.0-M1 created a multi-module packaging issue -->
                 <plugin>
