@@ -1,13 +1,13 @@
 package net.adoptium.marketplace.server.frontend.routes
 
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.ws.rs.*
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
+import kotlinx.coroutines.runBlocking
 import net.adoptium.marketplace.dataSources.APIDataStore
-import net.adoptium.marketplace.schema.Architecture
-import net.adoptium.marketplace.schema.CLib
-import net.adoptium.marketplace.schema.ImageType
-import net.adoptium.marketplace.schema.JvmImpl
-import net.adoptium.marketplace.schema.OperatingSystem
-import net.adoptium.marketplace.schema.Release
-import net.adoptium.marketplace.schema.Vendor
+import net.adoptium.marketplace.schema.*
 import net.adoptium.marketplace.server.frontend.OpenApiDocs
 import net.adoptium.marketplace.server.frontend.Pagination.defaultPageSize
 import net.adoptium.marketplace.server.frontend.Pagination.getPage
@@ -28,20 +28,6 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.ws.rs.BadRequestException
-import jakarta.ws.rs.GET
-import jakarta.ws.rs.NotFoundException
-import jakarta.ws.rs.Path
-import jakarta.ws.rs.PathParam
-import jakarta.ws.rs.Produces
-import jakarta.ws.rs.QueryParam
-import jakarta.ws.rs.ServerErrorException
-import jakarta.ws.rs.core.Context
-import jakarta.ws.rs.core.MediaType
-import jakarta.ws.rs.core.Response
-import jakarta.ws.rs.core.UriInfo
 
 @Tag(name = "Assets")
 @Path("/v1/assets/")
@@ -69,7 +55,7 @@ constructor(
             APIResponse(responseCode = "400", description = "bad input parameter")
         ]
     )
-    suspend fun get(
+    fun get(
         @Parameter(name = "vendor", description = OpenApiDocs.VENDOR, required = true)
         @PathParam("vendor")
         vendor: Vendor,
@@ -110,8 +96,10 @@ constructor(
         before: APIDateTime?,
 
         @Parameter(
-            name = "page_size", description = "Pagination page size",
-            schema = Schema(defaultValue = defaultPageSize, maximum = maxPageSize, type = SchemaType.INTEGER), required = false
+            name = "page_size",
+            description = "Pagination page size",
+            schema = Schema(defaultValue = defaultPageSize, maximum = maxPageSize, type = SchemaType.INTEGER),
+            required = false
         )
         @QueryParam("page_size")
         pageSize: Int?,
@@ -133,15 +121,17 @@ constructor(
 
     ): List<Release> {
 
-        val order = sortOrder ?: SortOrder.DESC
-        val releaseSortMethod = sortMethod ?: SortMethod.DEFAULT
+        return runBlocking {
+            val order = sortOrder ?: SortOrder.DESC
+            val releaseSortMethod = sortMethod ?: SortMethod.DEFAULT
 
-        val releaseFilter = ReleaseFilter(featureVersion = version)
-        val binaryFilter = BinaryFilter(os, arch, image_type, jvm_impl, before, cLib)
+            val releaseFilter = ReleaseFilter(featureVersion = version)
+            val binaryFilter = BinaryFilter(os, arch, image_type, jvm_impl, before, cLib)
 
-        val releases = releaseEndpoint.getReleases(vendor, releaseFilter, binaryFilter, order, releaseSortMethod)
+            val releases = releaseEndpoint.getReleases(vendor, releaseFilter, binaryFilter, order, releaseSortMethod)
 
-        return getPage(pageSize, page, releases)
+            return@runBlocking getPage(pageSize, page, releases)
+        }
     }
 
     @GET
@@ -161,7 +151,7 @@ constructor(
             APIResponse(responseCode = "500", description = "multiple releases match the request")
         ]
     )
-    suspend fun get(
+    fun get(
         @Parameter(name = "vendor", description = OpenApiDocs.VENDOR, required = true)
         @PathParam("vendor")
         vendor: Vendor,
@@ -190,24 +180,30 @@ constructor(
         @QueryParam("jvm_impl")
         jvm_impl: JvmImpl?
     ): Release {
-        if (releaseName == null || releaseName.trim().isEmpty()) {
-            throw BadRequestException("Must provide a releaseName")
-        }
-
-        val releaseFilter = ReleaseFilter(vendor = vendor, releaseName = releaseName.trim())
-        val binaryFilter = BinaryFilter(os, arch, image_type, jvm_impl, null, cLib)
-
-        val releases = releaseEndpoint.getReleases(vendor, releaseFilter, binaryFilter, SortOrder.DESC, SortMethod.DEFAULT).toList()
-
-        return when {
-            releases.isEmpty() -> {
-                throw NotFoundException("No releases found")
+        return runBlocking {
+            if (releaseName == null || releaseName.trim().isEmpty()) {
+                throw BadRequestException("Must provide a releaseName")
             }
-            releases.size > 1 -> {
-                throw ServerErrorException("Multiple releases match request", Response.Status.INTERNAL_SERVER_ERROR)
-            }
-            else -> {
-                releases[0]
+
+            val releaseFilter = ReleaseFilter(vendor = vendor, releaseName = releaseName.trim())
+            val binaryFilter = BinaryFilter(os, arch, image_type, jvm_impl, null, cLib)
+
+            val releases =
+                releaseEndpoint.getReleases(vendor, releaseFilter, binaryFilter, SortOrder.DESC, SortMethod.DEFAULT)
+                    .toList()
+
+            return@runBlocking when {
+                releases.isEmpty() -> {
+                    throw NotFoundException("No releases found")
+                }
+
+                releases.size > 1 -> {
+                    throw ServerErrorException("Multiple releases match request", Response.Status.INTERNAL_SERVER_ERROR)
+                }
+
+                else -> {
+                    releases[0]
+                }
             }
         }
     }
@@ -228,7 +224,7 @@ constructor(
             APIResponse(responseCode = "400", description = "bad input parameter")
         ]
     )
-    suspend fun getReleaseVersion(
+    fun getReleaseVersion(
         @Parameter(name = "vendor", description = OpenApiDocs.VENDOR, required = true)
         @PathParam("vendor")
         vendor: Vendor,
@@ -262,8 +258,10 @@ constructor(
         lts: Boolean?,
 
         @Parameter(
-            name = "page_size", description = "Pagination page size",
-            schema = Schema(defaultValue = defaultPageSize, maximum = maxPageSize, type = SchemaType.INTEGER), required = false
+            name = "page_size",
+            description = "Pagination page size",
+            schema = Schema(defaultValue = defaultPageSize, maximum = maxPageSize, type = SchemaType.INTEGER),
+            required = false
         )
         @QueryParam("page_size")
         pageSize: Int?,
@@ -283,19 +281,21 @@ constructor(
         @QueryParam("sort_method")
         sortMethod: SortMethod?
     ): List<Release> {
-        val releases = releaseEndpoint.getReleases(
-            vendor,
-            sortOrder,
-            sortMethod,
-            version,
-            lts,
-            os,
-            arch,
-            image_type,
-            jvm_impl,
-            cLib
-        )
-        return getPage(pageSize, page, releases)
+        return runBlocking {
+            val releases = releaseEndpoint.getReleases(
+                vendor,
+                sortOrder,
+                sortMethod,
+                version,
+                lts,
+                os,
+                arch,
+                image_type,
+                jvm_impl,
+                cLib
+            )
+            return@runBlocking getPage(pageSize, page, releases)
+        }
     }
 
     data class binaryPermutation(
@@ -307,8 +307,11 @@ constructor(
 
     @GET
     @Path("/latest/{vendor}/{feature_version}/{jvm_impl}")
-    @Operation(summary = "Returns list of latest assets for the given feature version and jvm impl", operationId = "getLatestAssets")
-    suspend fun getLatestAssets(
+    @Operation(
+        summary = "Returns list of latest assets for the given feature version and jvm impl",
+        operationId = "getLatestAssets"
+    )
+    fun getLatestAssets(
 
         @Parameter(name = "vendor", description = OpenApiDocs.VENDOR, required = true)
         @PathParam("vendor")
@@ -327,30 +330,36 @@ constructor(
 
 
         ): List<BinaryAssetView> {
-        val releaseFilter = ReleaseFilter(featureVersion = version)
-        val binaryFilter = BinaryFilter(null, null, null, jvm_impl, null, null)
+        return runBlocking {
+            val releaseFilter = ReleaseFilter(featureVersion = version)
+            val binaryFilter = BinaryFilter(null, null, null, jvm_impl, null, null)
 
-        val releases = releaseEndpoint.getReleases(vendor, releaseFilter, binaryFilter, SortOrder.ASC, SortMethod.DEFAULT)
+            val releases =
+                releaseEndpoint.getReleases(vendor, releaseFilter, binaryFilter, SortOrder.ASC, SortMethod.DEFAULT)
 
-        return releases
-            .flatMap { release ->
-                release.binaries
-                    .asSequence()
-                    .map { Pair(release, it) }
-            }
-            .associateBy {
-                binaryPermutation(it.first.vendor, it.second.architecture, it.second.imageType, it.second.os)
-            }
-            .values
-            .map { BinaryAssetView(it.first.releaseName, it.first.vendor, it.second, it.first.openjdkVersionData) }
-            .toList()
+            return@runBlocking releases
+                .flatMap { release ->
+                    release.binaries
+                        .asSequence()
+                        .map { Pair(release, it) }
+                }
+                .associateBy {
+                    binaryPermutation(it.first.vendor, it.second.architecture, it.second.imageType, it.second.os)
+                }
+                .values
+                .map { BinaryAssetView(it.first.releaseName, it.first.vendor, it.second, it.first.openjdkVersionData) }
+                .toList()
+        }
     }
 
 
     @GET
     @Path("/latestForVendors")
-    @Operation(summary = "Returns list of latest assets for the given feature version and jvm impl", operationId = "latestForVendors")
-    suspend fun latestForVendors(
+    @Operation(
+        summary = "Returns list of latest assets for the given feature version and jvm impl",
+        operationId = "latestForVendors"
+    )
+    fun latestForVendors(
 
         @Parameter(name = "vendor", description = OpenApiDocs.VENDOR, required = true)
         @QueryParam("vendor")
@@ -374,29 +383,31 @@ constructor(
 
     ): List<BinaryAssetView> {
 
-        val versions = if (version == null || version.isEmpty()) {
-            apiDataStore.getReleases(Vendor.adoptium).getReleaseInfo().available_releases.toList()
-        } else {
-            version
+        return runBlocking {
+            val versions = if (version == null || version.isEmpty()) {
+                apiDataStore.getReleases(Vendor.adoptium).getReleaseInfo().available_releases.toList()
+            } else {
+                version
+            }
+
+            return@runBlocking vendors
+                .flatMap { vendor ->
+                    val releaseFilter = ReleaseFilterMultiple(versions, null, listOf(vendor), null)
+                    val binaryFilter = BinaryFilterMultiple(os, arch, image_type, null, null, null)
+
+                    releaseEndpoint.getReleases(vendor, releaseFilter, binaryFilter, SortOrder.ASC, SortMethod.DEFAULT)
+                }
+                .flatMap { release ->
+                    release.binaries
+                        .asSequence()
+                        .map { Pair(release, it) }
+                }
+                .associateBy {
+                    binaryPermutation(it.first.vendor, it.second.architecture, it.second.imageType, it.second.os)
+                }
+                .values
+                .map { BinaryAssetView(it.first.releaseName, it.first.vendor, it.second, it.first.openjdkVersionData) }
+                .toList()
         }
-
-        return vendors
-            .flatMap { vendor ->
-                val releaseFilter = ReleaseFilterMultiple(versions, null, listOf(vendor), null)
-                val binaryFilter = BinaryFilterMultiple(os, arch, image_type, null, null, null)
-
-                releaseEndpoint.getReleases(vendor, releaseFilter, binaryFilter, SortOrder.ASC, SortMethod.DEFAULT)
-            }
-            .flatMap { release ->
-                release.binaries
-                    .asSequence()
-                    .map { Pair(release, it) }
-            }
-            .associateBy {
-                binaryPermutation(it.first.vendor, it.second.architecture, it.second.imageType, it.second.os)
-            }
-            .values
-            .map { BinaryAssetView(it.first.releaseName, it.first.vendor, it.second, it.first.openjdkVersionData) }
-            .toList()
     }
 }
