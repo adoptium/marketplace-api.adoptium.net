@@ -1,11 +1,11 @@
 package net.adoptium.marketplace.server.frontend.routes.info
 
-import net.adoptium.marketplace.schema.Architecture
-import net.adoptium.marketplace.schema.CLib
-import net.adoptium.marketplace.schema.ImageType
-import net.adoptium.marketplace.schema.JvmImpl
-import net.adoptium.marketplace.schema.OperatingSystem
-import net.adoptium.marketplace.schema.Vendor
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.ws.rs.*
+import jakarta.ws.rs.core.MediaType
+import kotlinx.coroutines.runBlocking
+import net.adoptium.marketplace.schema.*
 import net.adoptium.marketplace.server.frontend.OpenApiDocs
 import net.adoptium.marketplace.server.frontend.Pagination
 import net.adoptium.marketplace.server.frontend.Pagination.getPage
@@ -19,14 +19,6 @@ import org.eclipse.microprofile.openapi.annotations.enums.SchemaType
 import org.eclipse.microprofile.openapi.annotations.media.Schema
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.ws.rs.GET
-import jakarta.ws.rs.Path
-import jakarta.ws.rs.PathParam
-import jakarta.ws.rs.Produces
-import jakarta.ws.rs.QueryParam
-import jakarta.ws.rs.core.MediaType
 
 @Tag(name = "Release Info")
 @Path("/v1/info")
@@ -41,7 +33,7 @@ constructor(
     @GET
     @Path("/release_names/{vendor}")
     @Operation(summary = "Returns a list of all release names", operationId = "getReleaseNames")
-    suspend fun get(
+    fun get(
         @Parameter(name = "vendor", description = OpenApiDocs.VENDOR, required = true)
         @PathParam("vendor")
         vendor: Vendor,
@@ -74,11 +66,25 @@ constructor(
         @QueryParam("lts")
         lts: Boolean?,
 
-        @Parameter(name = "page_size", description = "Pagination page size", schema = Schema(defaultValue = Pagination.defaultPageSize, maximum = Pagination.maxPageSize, type = SchemaType.INTEGER), required = false)
+        @Parameter(
+            name = "page_size",
+            description = "Pagination page size",
+            schema = Schema(
+                defaultValue = Pagination.defaultPageSize,
+                maximum = Pagination.maxPageSize,
+                type = SchemaType.INTEGER
+            ),
+            required = false
+        )
         @QueryParam("page_size")
         pageSize: Int?,
 
-        @Parameter(name = "page", description = "Pagination page number", schema = Schema(defaultValue = "0", type = SchemaType.INTEGER), required = false)
+        @Parameter(
+            name = "page",
+            description = "Pagination page number",
+            schema = Schema(defaultValue = "0", type = SchemaType.INTEGER),
+            required = false
+        )
         @QueryParam("page")
         page: Int?,
 
@@ -90,30 +96,31 @@ constructor(
         @QueryParam("sort_method")
         sortMethod: SortMethod?
     ): ReleaseNameList {
-        val releases = releaseEndpoint.getReleases(
-            vendor,
-            sortOrder,
-            sortMethod,
-            version,
-            lts,
-            os,
-            arch,
-            image_type,
-            jvm_impl,
-            cLib
-        )
-            .map { it.releaseName }
+        return runBlocking {
+            val releases = releaseEndpoint.getReleases(
+                vendor,
+                sortOrder,
+                sortMethod,
+                version,
+                lts,
+                os,
+                arch,
+                image_type,
+                jvm_impl,
+                cLib
+            )
+                .map { it.releaseName }
 
-        val pagedReleases = getPage(pageSize, page, releases)
+            val pagedReleases = getPage(pageSize, page, releases)
 
-        return ReleaseNameList(pagedReleases)
+            return@runBlocking ReleaseNameList(pagedReleases)
+        }
     }
 
     @Path("/release_versions/{vendor}")
     @GET
     @Operation(summary = "Returns a list of all release versions", operationId = "getReleaseVersions")
-
-    suspend fun getVersions(
+    fun getVersions(
 
         @Parameter(name = "vendor", description = OpenApiDocs.VENDOR, required = true)
         @PathParam("vendor")
@@ -147,11 +154,25 @@ constructor(
         @QueryParam("lts")
         lts: Boolean?,
 
-        @Parameter(name = "page_size", description = "Pagination page size", schema = Schema(defaultValue = Pagination.defaultPageSize, maximum = Pagination.largerPageSize, type = SchemaType.INTEGER), required = false)
+        @Parameter(
+            name = "page_size",
+            description = "Pagination page size",
+            schema = Schema(
+                defaultValue = Pagination.defaultPageSize,
+                maximum = Pagination.largerPageSize,
+                type = SchemaType.INTEGER
+            ),
+            required = false
+        )
         @QueryParam("page_size")
         pageSize: Int?,
 
-        @Parameter(name = "page", description = "Pagination page number", schema = Schema(defaultValue = "0", type = SchemaType.INTEGER), required = false)
+        @Parameter(
+            name = "page",
+            description = "Pagination page number",
+            schema = Schema(defaultValue = "0", type = SchemaType.INTEGER),
+            required = false
+        )
         @QueryParam("page")
         page: Int?,
 
@@ -164,23 +185,25 @@ constructor(
         sortMethod: SortMethod?
 
     ): ReleaseVersionList {
-        val releases = releaseEndpoint.getReleases(
-            vendor,
-            sortOrder,
-            sortMethod,
-            version,
-            lts,
-            os,
-            arch,
-            image_type,
-            jvm_impl,
-            cLib
-        )
-            .map { it.openjdkVersionData }
-            .distinct()
+        return runBlocking {
+            val releases = releaseEndpoint.getReleases(
+                vendor,
+                sortOrder,
+                sortMethod,
+                version,
+                lts,
+                os,
+                arch,
+                image_type,
+                jvm_impl,
+                cLib
+            )
+                .map { it.openjdkVersionData }
+                .distinct()
 
-        val pagedReleases = getPage(pageSize, page, releases, maxPageSizeNum = Pagination.largerPageSizeNum)
+            val pagedReleases = getPage(pageSize, page, releases, maxPageSizeNum = Pagination.largerPageSizeNum)
 
-        return ReleaseVersionList(pagedReleases.toTypedArray())
+            return@runBlocking ReleaseVersionList(pagedReleases.toTypedArray())
+        }
     }
 }
