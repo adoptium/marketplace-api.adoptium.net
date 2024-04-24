@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21
+FROM eclipse-temurin:22
 
 RUN     useradd -ms /bin/bash api && \
         mkdir -p /home/api/deployment/ && \
