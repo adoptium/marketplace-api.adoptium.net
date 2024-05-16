@@ -27,6 +27,8 @@ jobs:
 
     - name: Build Marketplace
       uses: ./.github/actions/build-marketplace
+      with:
+        SKIP_TESTS: false
 
     - name: Upload yaml schema
       uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
