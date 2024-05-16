@@ -19,7 +19,7 @@ jobs:
       - name: Build Marketplace
         uses: ./.github/actions/build-marketplace
         with:
-          RUN_TESTS: true
+          SKIP_TESTS: true
 
       - name: Validate vendors
         working-directory: adoptium-marketplace-vendor-validation

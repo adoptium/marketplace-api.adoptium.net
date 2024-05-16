@@ -53,6 +53,8 @@ jobs:
     - name: Build Marketplace
       if: matrix.build-mode == 'manual'
       uses: ./.github/actions/build-marketplace
+      with:
+        SKIP_TESTS: false
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@b7cec7526559c32f1616476ff32d17ba4c59b2d6 # v3.25.5
