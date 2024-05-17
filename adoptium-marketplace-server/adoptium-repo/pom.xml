@@ -26,6 +26,7 @@
         <dependency>
             <groupId>net.adoptium.marketplace</groupId>
             <artifactId>adoptium-marketplace-client</artifactId>
+            <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
 
