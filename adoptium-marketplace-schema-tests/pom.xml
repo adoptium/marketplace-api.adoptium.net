@@ -52,12 +52,6 @@
                             <goal>test-jar</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>jar</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>
         </plugins>
