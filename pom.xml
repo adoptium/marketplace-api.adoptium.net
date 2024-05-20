@@ -13,9 +13,9 @@
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
-        <quarkus.version>3.8.2</quarkus.version>
-        <jacoco.version>0.8.8</jacoco.version>
-        <kotlin.version>1.9.23</kotlin.version>
+        <quarkus.version>3.9.4</quarkus.version>
+        <jacoco.version>0.8.12</jacoco.version>
+        <kotlin.version>1.9.24</kotlin.version>
         <adoptiumVersion>3.0.1-SNAPSHOT</adoptiumVersion>
     </properties>
 
@@ -56,6 +56,7 @@
                 <artifactId>adoptium-marketplace-client</artifactId>
                 <version>${project.version}</version>
                 <classifier>tests</classifier>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>net.adoptium.marketplace.server</groupId>
@@ -97,17 +98,17 @@
             <dependency>
                 <groupId>com.microsoft.azure</groupId>
                 <artifactId>applicationinsights-runtime-attach</artifactId>
-                <version>3.5.0</version>
+                <version>3.5.2</version>
             </dependency>
             <dependency>
                 <groupId>io.opentelemetry</groupId>
                 <artifactId>opentelemetry-api</artifactId>
-                <version>1.36.0</version>
+                <version>1.38.0</version>
             </dependency>
             <dependency>
                 <groupId>io.mockk</groupId>
                 <artifactId>mockk</artifactId>
-                <version>1.13.10</version>
+                <version>1.13.11</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -125,12 +126,22 @@
                     <artifactId>kotlin-maven-plugin</artifactId>
                     <version>${kotlin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.4.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+                <version>${quarkus.version}</version>
             </plugin>
         </plugins>
     </build>

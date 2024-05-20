@@ -2,9 +2,13 @@ name: Build Marketplace
 description: Sets up Java, Maven Cache and builds the Marketplace.
 inputs:
     RUN_TESTS:
-      description: 'Run Maven Tests'
+      description: 'Run Maven Tests (deprecated, use SKIP_TESTS instead)'
+      default: 'true'
+      required: false
+    SKIP_TESTS:
+      description: 'Skip Maven Tests'
       default: 'false'
-      required: true
+      required: false
     WORKING_DIRECTORY:
       description: 'Working directory for the steps'
       required: true
@@ -13,7 +17,7 @@ inputs:
 runs:
   using: composite
   steps:
-  - uses: actions/setup-java@9704b39bf258b59bc04b50fa2dd55e9ed76b47a8 # v4.1.0
+  - uses: actions/setup-java@99b8673ff64fbf99d8d325f52d9a5bdedb8483e9 # v4.2.1
     with:
       java-version: 21
       distribution: temurin
@@ -26,7 +30,7 @@ runs:
     working-directory: ${{ inputs.WORKING_DIRECTORY }}/api.adoptium.net
 
   - name: Cache api.adoptium.net packages
-    uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
+    uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
     id: cache-api
     with:
       path: ~/.m2/repository/net/adoptium/api
@@ -37,9 +41,9 @@ runs:
     shell: bash
     if: steps.cache-api.outputs.cache-hit != 'true'
     working-directory: ${{ inputs.WORKING_DIRECTORY }}/api.adoptium.net
-    run: ./mvnw --batch-mode clean install -Padoptium -DskipTests=${{ inputs.RUN_TESTS }}
+    run: ./mvnw --batch-mode clean install -Padoptium -DskipTests=${{ inputs.SKIP_TESTS || inputs.RUN_TESTS == false }}
 
   - name: Build marketplace
     shell: bash
     working-directory: ${{ inputs.WORKING_DIRECTORY }}
-    run: ./mvnw --batch-mode clean install -DskipTests=${{ inputs.RUN_TESTS }}
+    run: ./mvnw --batch-mode clean install -DskipTests=${{ inputs.SKIP_TESTS || inputs.RUN_TESTS == false }}
