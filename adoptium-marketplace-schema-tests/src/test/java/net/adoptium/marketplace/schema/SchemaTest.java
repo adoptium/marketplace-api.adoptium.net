@@ -12,14 +12,14 @@ public class SchemaTest {
     @Test
     public void canParseCurrentJsonSchema() throws IOException {
         try (FileInputStream fis = new FileInputStream("../adoptium-marketplace-schema/target/generated/openapi.json")) {
-            OpenAPI schema = OpenApiParser.parse(fis, Format.JSON);
+            OpenAPI schema = OpenApiParser.parse(fis, Format.JSON, null);
         }
     }
 
     @Test
     public void canParseCurrentYamlSchema() throws IOException {
         try (FileInputStream fis = new FileInputStream("../adoptium-marketplace-schema/target/generated/openapi.yaml")) {
-            OpenAPI schema = OpenApiParser.parse(fis, Format.YAML);
+            OpenAPI schema = OpenApiParser.parse(fis, Format.YAML, null);
         }
     }
 }
