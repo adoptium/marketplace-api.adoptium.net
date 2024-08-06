@@ -6,6 +6,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -15,14 +16,18 @@ import java.nio.file.Files;
 
 public class TestServer implements BeforeAllCallback, AfterAllCallback {
 
+    public static final int PORT = 8897;
     public static Server server;
 
     @Override
     public void beforeAll(ExtensionContext extensionContext) throws Exception {
+        QueuedThreadPool threadPool = new QueuedThreadPool();
+        threadPool.setMaxThreads(200);
 
-        server = new Server();
+        server = new Server(threadPool);
         ServerConnector connector = new ServerConnector(server);
-        connector.setPort(8090);
+        connector.setHost("127.0.0.1");
+        connector.setPort(PORT);
         server.addConnector(connector);
 
         ResourceHandler resource_handler = new ResourceHandler();
@@ -36,7 +41,7 @@ public class TestServer implements BeforeAllCallback, AfterAllCallback {
 
         // Set DefaultHandler directly on the server
         server.setDefaultHandler(new DefaultHandler());
-        
+
         server.setHandler(handlers);
         server.start();
     }

@@ -6,7 +6,6 @@ import net.adoptium.marketplace.schema.ReleaseList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +34,7 @@ public class Rsa256VerifierTest {
 
     @Test
     public void pullFullRepository() throws Exception, FailedToPullDataException {
-        MarketplaceClient client = getMarketplaceClient("http://localhost:8090/workingRepository");
+        MarketplaceClient client = getMarketplaceClient("http://localhost:" + TestServer.PORT + "/workingRepository");
 
         ReleaseList releases = client.readRepositoryData();
         Assertions.assertFalse(releases.getReleases().isEmpty());
@@ -44,7 +43,7 @@ public class Rsa256VerifierTest {
     @Test
     public void pullFullRepositoryWithBadSignatures() {
         Assertions.assertThrows(FailedToPullDataException.class, () -> {
-            MarketplaceClient client = getMarketplaceClient("http://localhost:8090/repositoryWithBadSignatures");
+            MarketplaceClient client = getMarketplaceClient("http://localhost:" + TestServer.PORT + "/repositoryWithBadSignatures");
             client.readRepositoryData();
         });
     }
