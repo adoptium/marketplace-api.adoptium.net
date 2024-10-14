@@ -1,34 +1,39 @@
 package net.adoptium.marketplace.dataSources.persitence.mongo
 
+import com.mongodb.MongoCommandException
+import com.mongodb.kotlin.client.coroutine.MongoCollection
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.runBlocking
-import org.litote.kmongo.coroutine.CoroutineCollection
-import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.slf4j.LoggerFactory
 
-abstract class MongoInterface(mongoClient: MongoClient) {
-    protected val database: CoroutineDatabase = mongoClient.getDatabase()
-
+abstract class MongoInterface {
     companion object {
         @JvmStatic
         val LOGGER = LoggerFactory.getLogger(this::class.java)
     }
 
-    inline fun <reified T : Any> initDb(database: CoroutineDatabase, collectionName: String, crossinline onCollectionCreated: ((CoroutineCollection<T>) -> Unit) = {}): CoroutineCollection<T> {
-        return runBlocking {
-            return@runBlocking if (!database.listCollectionNames().contains(collectionName)) {
-                try {
-                    // TODO add indexes
-                    database.createCollection(collectionName)
-                    val collection = database.getCollection<T>(collectionName)
-                    onCollectionCreated(collection)
-                    collection
-                } catch (e: Exception) {
-                    LOGGER.error("Failed to create db", e)
-                    database.getCollection(collectionName)
+    inline fun <reified T : Any> createCollection(
+        database: MongoDatabase,
+        collectionName: String,
+        crossinline onCollectionCreated: ((MongoCollection<T>) -> Unit) = {}
+    ): MongoCollection<T> {
+        runBlocking {
+            try {
+                database.createCollection(collectionName)
+                val collection = database.getCollection<T>(collectionName)
+                onCollectionCreated(collection)
+            } catch (e: MongoCommandException) {
+                if (e.errorCode == 48) {
+                    // collection already exists ... ignore
+                } else {
+                    LOGGER.warn(
+                        "User does not have permission to create collection $collectionName",
+                        e
+                    )
                 }
-            } else {
-                database.getCollection(collectionName)
             }
         }
+        return database.getCollection(collectionName, T::class.java)
+
     }
 }

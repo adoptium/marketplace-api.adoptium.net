@@ -1,26 +1,25 @@
 package net.adoptium.marketplace.dataSources.persitence.mongo
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
-import org.litote.kmongo.coroutine.CoroutineDatabase
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.id.jackson.IdJacksonModule
-import org.litote.kmongo.reactivestreams.KMongo
-import org.litote.kmongo.util.KMongoConfiguration
-import org.slf4j.LoggerFactory
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import jakarta.enterprise.context.ApplicationScoped
-
-interface MongoClient {
-    fun getDatabase(): CoroutineDatabase
-}
+import net.adoptium.marketplace.dataSources.persitence.mongo.codecs.JacksonCodecProvider
+import net.adoptium.marketplace.dataSources.persitence.mongo.codecs.ZonedDateTimeCodecProvider
+import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.configuration.CodecRegistry
+import org.slf4j.LoggerFactory
 
 @ApplicationScoped
-class MongoClientImpl : MongoClient {
-    private var db: CoroutineDatabase? = null
+open class MongoClient {
+    private val database: MongoDatabase
+    private val client: com.mongodb.kotlin.client.coroutine.MongoClient
+    private val codecs: CodecRegistry
+
+    // required as injection objects to the final field
+    open fun getDatabase() = database
+    open fun getCodecs(): CodecRegistry = codecs
+
 
     companion object {
         @JvmStatic
@@ -40,7 +39,8 @@ class MongoClientImpl : MongoClient {
         ): String {
             val hostNonNull = host ?: DEFAULT_HOST
             val portNonNull = port ?: DEFAULT_PORT
-            val serverSelectionTimeoutMillsNonNull = serverSelectionTimeoutMills ?: DEFAULT_SERVER_SELECTION_TIMEOUT_MILLIS
+            val serverSelectionTimeoutMillsNonNull =
+                serverSelectionTimeoutMills ?: DEFAULT_SERVER_SELECTION_TIMEOUT_MILLIS
 
             val usernamePassword = if (username != null && password != null) {
                 "$username:$password@"
@@ -50,19 +50,20 @@ class MongoClientImpl : MongoClient {
 
             val server = "$hostNonNull:$portNonNull"
 
-            return System.getProperty("MONGODB_TEST_CONNECTION_STRING")?.plus("/$dbName")
+            return System.getProperty("MONGODB_TEST_CONNECTION_STRING")
                 ?: if (username != null && password != null) {
                     LOGGER.info("Connecting to mongodb://$username:a-password@$server/$dbName")
                     "mongodb://$usernamePassword$server/$dbName"
                 } else {
-                    val developmentConnectionString = "mongodb://$usernamePassword$server/?serverSelectionTimeoutMS=$serverSelectionTimeoutMillsNonNull"
+                    val developmentConnectionString =
+                        "mongodb://$usernamePassword$server/?serverSelectionTimeoutMS=$serverSelectionTimeoutMillsNonNull"
                     LOGGER.info("Using development connection string - $developmentConnectionString")
                     developmentConnectionString
                 }
         }
     }
 
-    fun createDb(): CoroutineDatabase {
+    init {
         val dbName = System.getenv("MONGODB_DBNAME") ?: DEFAULT_DBNAME
         val connectionString = createConnectionString(
             dbName,
@@ -72,30 +73,26 @@ class MongoClientImpl : MongoClient {
             port = System.getenv("MONGODB_PORT"),
             serverSelectionTimeoutMills = System.getenv("MONGODB_SERVER_SELECTION_TIMEOUT_MILLIS")
         )
+        codecs = CodecRegistries.fromProviders(
+            MongoClientSettings.getDefaultCodecRegistry(),
+            ZonedDateTimeCodecProvider(),
+            JacksonCodecProvider()
+        )
 
         var settingsBuilder = MongoClientSettings.builder()
+            .codecRegistry(codecs)
             .applyConnectionString(ConnectionString(connectionString))
-
         val sslEnabled = System.getenv("MONGODB_SSL")?.toBoolean()
         if (sslEnabled == true) {
-            settingsBuilder = settingsBuilder.applyToSslSettings { it.enabled(true).invalidHostNameAllowed(true) }
+            val checkMongoHostName = System.getenv("DISABLE_MONGO_HOST_CHECK")?.toBoolean() ?: false
+
+            settingsBuilder =
+                settingsBuilder.applyToSslSettings { it.enabled(true).invalidHostNameAllowed(checkMongoHostName) }
         }
 
-        KMongoConfiguration.registerBsonModule(IdJacksonModule())
-        KMongoConfiguration.registerBsonModule(Jdk8Module())
-        KMongoConfiguration.registerBsonModule(JavaTimeModule())
-        KMongoConfiguration.bsonMapper.disable(SerializationFeature.WRITE_DATES_WITH_ZONE_ID)
-        KMongoConfiguration.bsonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        KMongoConfiguration.bsonMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        client = com.mongodb.kotlin.client.coroutine.MongoClient.create(settingsBuilder.build())
 
-        val client = KMongo.createClient(settingsBuilder.build()).coroutine
-        return client.getDatabase(dbName)
+        database = client.getDatabase(dbName)
     }
 
-    override fun getDatabase(): CoroutineDatabase {
-        if (db == null) {
-            db = createDb();
-        }
-        return db!!
-    }
 }

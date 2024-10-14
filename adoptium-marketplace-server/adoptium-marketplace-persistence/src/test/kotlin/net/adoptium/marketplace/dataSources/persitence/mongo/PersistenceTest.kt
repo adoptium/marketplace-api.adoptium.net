@@ -27,9 +27,9 @@ class PersistenceTest {
     @BeforeEach
     fun cleanDb(mongoClient: MongoClient) {
         runBlocking {
-            mongoClient.getDatabase().dropCollection("adoptium_" + MongoVendorPersistence.RELEASE_DB)
-            mongoClient.getDatabase().dropCollection("adoptium_" + MongoVendorPersistence.RELEASE_INFO_DB)
-            mongoClient.getDatabase().dropCollection("adoptium_" + MongoVendorPersistence.UPDATE_TIME_DB)
+            mongoClient.getDatabase().getCollection<Any>("adoptium_" + MongoVendorPersistence.RELEASE_DB).drop()
+            mongoClient.getDatabase().getCollection<Any>("adoptium_" + MongoVendorPersistence.RELEASE_INFO_DB).drop()
+            mongoClient.getDatabase().getCollection<Any>("adoptium_" + MongoVendorPersistence.UPDATE_TIME_DB).drop()
         }
     }
 
