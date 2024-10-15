@@ -13,12 +13,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo-coroutine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo-id-jackson</artifactId>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-kotlin-coroutine</artifactId>
         </dependency>
         <dependency>
             <groupId>net.adoptium.marketplace</groupId>
@@ -51,17 +47,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo-flapdoodle</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>net.adoptium.marketplace</groupId>
             <artifactId>adoptium-marketplace-schema-tests</artifactId>
             <version>${project.version}</version>
@@ -71,6 +56,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
