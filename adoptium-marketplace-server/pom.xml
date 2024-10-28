@@ -161,7 +161,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.25.0</version>
+                    <version>3.26.0</version>
                     <configuration>
                         <targetJdk>${jdk.version}</targetJdk>
                     </configuration>
@@ -520,7 +520,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.25.0</version>
+                <version>3.26.0</version>
                 <configuration>
                     <targetJdk>${jdk.version}</targetJdk>
                 </configuration>
