@@ -15,7 +15,7 @@
         <main.class>net.adoptium.marketplace.Main</main.class>
         <quarkus.package.type>uber-jar</quarkus.package.type>
         <quarkus.package.runner-suffix>-jar-with-dependencies</quarkus.package.runner-suffix>
-        <kotlin.version>2.1.0</kotlin.version>
+        <kotlin.version>2.1.10</kotlin.version>
     </properties>
 
     <dependencies>
