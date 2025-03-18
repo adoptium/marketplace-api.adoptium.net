@@ -30,7 +30,7 @@ runs:
     working-directory: ${{ inputs.WORKING_DIRECTORY }}/api.adoptium.net
 
   - name: Cache api.adoptium.net packages
-    uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+    uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
     id: cache-api
     with:
       path: ~/.m2/repository/net/adoptium/api
