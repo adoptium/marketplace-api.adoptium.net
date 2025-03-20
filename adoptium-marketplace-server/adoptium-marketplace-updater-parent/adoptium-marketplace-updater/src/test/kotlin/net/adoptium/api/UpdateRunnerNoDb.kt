@@ -1,6 +1,7 @@
 package net.adoptium.api
 
 import io.quarkus.test.junit.QuarkusTest
+import net.adoptium.marketplace.client.TestServer
 import net.adoptium.marketplace.dataSources.APIDataStore
 import net.adoptium.marketplace.schema.Vendor
 import net.adoptium.marketplace.server.updater.AdoptiumMarketplaceUpdater
@@ -22,7 +23,11 @@ class UpdateRunnerNoDb {
         val adoptiumMarketplaceUpdater = AdoptiumMarketplaceUpdater(apiDataStore, object : VendorList {
             override fun getVendorInfo(): Map<Vendor, VendorInfo> {
                 return mapOf(
-                    Vendor.adoptium to VendorInfo(Vendor.adoptium, "http://localhost:8090/", "../../../exampleRepositories/keys/public.pem")
+                    Vendor.adoptium to VendorInfo(
+                        Vendor.adoptium,
+                        "http://localhost:" + TestServer.PORT + "/",
+                        "../../../exampleRepositories/keys/public.pem"
+                    )
                 )
             }
         })

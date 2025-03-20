@@ -10,16 +10,29 @@ public class Installer extends Asset {
     @Schema(example = "msi", description = "Type of the installer, i.e exe, msi, deb, dmg")
     private final String installerType;
 
+    public Installer(
+            String name,
+            String link,
+            String sha256sum,
+            String sha256sumLink,
+            String signatureLink,
+            String installerType
+    ) {
+        super(name, link, sha256sum, sha256sum, sha256sumLink, signatureLink);
+        this.installerType = installerType;
+    }
+
     @JsonCreator
     public Installer(
-        @JsonProperty("name") String name,
-        @JsonProperty("link") String link,
-        @JsonProperty(Asset.SHA256SUM_NAME) String sha256sum,
-        @JsonProperty(Asset.SHA_256_SUM_LINK_NAME) String sha256sumLink,
-        @JsonProperty(Asset.SIGNATURE_LINK_NAME) String signatureLink,
-        @JsonProperty(INSTALLER_TYPE_NAME) String installerType
+            @JsonProperty("name") String name,
+            @JsonProperty("link") String link,
+            @JsonProperty(Asset.SHA256SUM_NAME) String sha256sum,
+            @JsonProperty(Asset.SHA265SUM_NAME) String sha265sum,
+            @JsonProperty(Asset.SHA_256_SUM_LINK_NAME) String sha256sumLink,
+            @JsonProperty(Asset.SIGNATURE_LINK_NAME) String signatureLink,
+            @JsonProperty(INSTALLER_TYPE_NAME) String installerType
     ) {
-        super(name, link, sha256sum, sha256sumLink, signatureLink);
+        super(name, link, sha256sum, sha265sum, sha256sumLink, signatureLink);
         this.installerType = installerType;
     }
 

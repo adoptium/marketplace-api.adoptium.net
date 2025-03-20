@@ -28,6 +28,7 @@ public class RepoGenerator {
                                 "OpenJDK17U-jre_x64_mac_hotspot_17.0.1_12.tar.gz",
                                 "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/OpenJDK17U-jre_x64_mac_hotspot_17.0.1_12.tar.gz",
                                 "d7eefa08d893d1ae263dc4ba427baa67b3cb9d48e1151654e423007fb2801358",
+                                "d7eefa08d893d1ae263dc4ba427baa67b3cb9d48e1151654e423007fb2801358",
                                 "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.1%2B12/OpenJDK17U-jre_x64_mac_hotspot_17.0.1_12.tar.gz.sha256.txt",
                                 null
                             ),

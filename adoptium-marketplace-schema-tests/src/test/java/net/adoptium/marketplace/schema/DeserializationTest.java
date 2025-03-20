@@ -11,6 +11,26 @@ import java.io.IOException;
 public class DeserializationTest {
 
     @Test
+    public void canDeserializeDocsWithTypo() throws IOException {
+        ReleaseList deserialized = MarketplaceMapper.repositoryObjectMapper.readValue(DeserializationTest.class.getResourceAsStream("example.json"), ReleaseList.class);
+
+        ReleaseList deserializedWithTypo = MarketplaceMapper.repositoryObjectMapper.readValue(DeserializationTest.class.getResourceAsStream("example_with_typo.json"), ReleaseList.class);
+
+        Assertions.assertEquals(
+                deserialized.getReleases().get(0).getBinaries().get(0).getPackage().getSha256sum(),
+                deserializedWithTypo.getReleases().get(0).getBinaries().get(0).getPackage().getSha256sum());
+
+        Assertions.assertEquals(
+                deserialized.getReleases().get(0).getBinaries().get(0).getPackage().getSha265sum(),
+                deserializedWithTypo.getReleases().get(0).getBinaries().get(0).getPackage().getSha265sum());
+
+        Assertions.assertNotNull(deserialized.getReleases().get(0).getBinaries().get(0).getPackage().getSha265sum());
+        Assertions.assertNotNull(deserialized.getReleases().get(0).getBinaries().get(0).getPackage().getSha256sum());
+        Assertions.assertNotNull(deserializedWithTypo.getReleases().get(0).getBinaries().get(0).getPackage().getSha265sum());
+        Assertions.assertNotNull(deserializedWithTypo.getReleases().get(0).getBinaries().get(0).getPackage().getSha256sum());
+    }
+
+    @Test
     public void canDeserializeExampleDoc() throws IOException {
         ReleaseList deserialized = MarketplaceMapper.repositoryObjectMapper.readValue(DeserializationTest.class.getResourceAsStream("example.json"), ReleaseList.class);
 

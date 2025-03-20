@@ -1,15 +1,18 @@
 package net.adoptium.api
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import io.mockk.MockKAnnotations
 import io.quarkus.test.junit.QuarkusTest
 import io.restassured.RestAssured
+import jakarta.annotation.Priority
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.inject.Alternative
+import jakarta.ws.rs.core.Response
 import kotlinx.coroutines.runBlocking
+import net.adoptium.marketplace.dataSources.persitence.mongo.codecs.JacksonCodecProvider
+import net.adoptium.marketplace.dataSources.persitence.mongo.codecs.ZonedDateTimeCodecProvider
 import net.adoptium.marketplace.client.TestServer
 import net.adoptium.marketplace.dataSources.APIDataStore
 import net.adoptium.marketplace.dataSources.APIDataStoreImpl
@@ -21,23 +24,15 @@ import net.adoptium.marketplace.dataSources.persitence.mongo.MongoTest
 import net.adoptium.marketplace.schema.Vendor
 import net.adoptium.marketplace.server.updater.VendorInfo
 import net.adoptium.marketplace.server.updater.VendorList
+import org.bson.codecs.configuration.CodecRegistries
 import org.jboss.weld.junit5.auto.AddPackages
 import org.jboss.weld.junit5.auto.EnableAlternatives
 import org.jboss.weld.junit5.auto.EnableAutoWeld
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.litote.kmongo.coroutine.CoroutineDatabase
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.id.jackson.IdJacksonModule
-import org.litote.kmongo.reactivestreams.KMongo
-import org.litote.kmongo.util.KMongoConfiguration
-import jakarta.annotation.Priority
-import jakarta.enterprise.inject.Alternative
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.ws.rs.core.Response
-import org.junit.jupiter.api.Disabled
 
 @Priority(1)
 @Alternative
@@ -45,7 +40,11 @@ import org.junit.jupiter.api.Disabled
 class MockVendorList : VendorList {
     override fun getVendorInfo(): Map<Vendor, VendorInfo> {
         return mapOf(
-            Vendor.adoptium to VendorInfo(Vendor.adoptium, "http://localhost:8090/workingRepository", "../../../exampleRepositories/keys/public.pem")
+            Vendor.adoptium to VendorInfo(
+                Vendor.adoptium,
+                "http://localhost:" + TestServer.PORT + "/workingRepository",
+                "../../../exampleRepositories/keys/public.pem"
+            )
         )
     }
 }
@@ -53,23 +52,26 @@ class MockVendorList : VendorList {
 @Priority(1)
 @Alternative
 @ApplicationScoped
-class FongoClient : MongoClient {
+class FongoClient : MongoClient() {
 
     private val settingsBuilder: MongoClientSettings.Builder = MongoClientSettings.builder()
+        .codecRegistry(
+            CodecRegistries.fromProviders(
+                MongoClientSettings.getDefaultCodecRegistry(),
+                ZonedDateTimeCodecProvider(),
+                JacksonCodecProvider()
+            )
+        )
         .applyConnectionString(ConnectionString(System.getProperty("MONGODB_TEST_CONNECTION_STRING")))
 
-    private val db = KMongo.createClient(settingsBuilder.build()).coroutine.getDatabase("test-api")
+    private val db: MongoDatabase
 
     init {
-        KMongoConfiguration.registerBsonModule(IdJacksonModule())
-        KMongoConfiguration.registerBsonModule(Jdk8Module())
-        KMongoConfiguration.registerBsonModule(JavaTimeModule())
-        KMongoConfiguration.bsonMapper.disable(SerializationFeature.WRITE_DATES_WITH_ZONE_ID)
-        KMongoConfiguration.bsonMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        KMongoConfiguration.bsonMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        val client = com.mongodb.kotlin.client.coroutine.MongoClient.create(settingsBuilder.build())
+        db = client.getDatabase("test-api")
     }
 
-    override fun getDatabase(): CoroutineDatabase {
+    override fun getDatabase(): MongoDatabase {
         return db
     }
 }
@@ -100,7 +102,8 @@ class UpdateTriggerTest {
         runBlocking {
             VendorReleases.UPDATE_COOLOFF_IN_SECONDS = 0
 
-            val apiDataStore = APIDataStoreImpl(VendorReleasesFactoryImpl(DefaultVendorPersistenceFactory(FongoClient())))
+            val apiDataStore =
+                APIDataStoreImpl(VendorReleasesFactoryImpl(DefaultVendorPersistenceFactory(FongoClient())))
 
             var releases = apiDataStore.getReleases(Vendor.adoptium).getAllReleases()
             Assertions.assertTrue(releases.releases.size == 0)
