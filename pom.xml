@@ -15,7 +15,7 @@
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <quarkus.version>3.22.3</quarkus.version>
         <jacoco.version>0.8.13</jacoco.version>
-        <kotlin.version>2.1.20</kotlin.version>
+        <kotlin.version>2.1.21</kotlin.version>
         <adoptiumVersion>3.0.1-SNAPSHOT</adoptiumVersion>
     </properties>
 
