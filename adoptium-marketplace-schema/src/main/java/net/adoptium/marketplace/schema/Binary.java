@@ -27,92 +27,92 @@ public class Binary {
     public static final String DISTRIBUTION_NAME = "distribution";
 
     @Schema(
-        name = OS_NAME,
-        implementation = OperatingSystem.class,
-        required = true)
+            name = OS_NAME,
+            implementation = OperatingSystem.class,
+            required = true)
     private final OperatingSystem os;
 
     @Schema(
-        name = ARCHITECTURE_NAME,
-        implementation = Architecture.class,
-        required = true)
+            name = ARCHITECTURE_NAME,
+            implementation = Architecture.class,
+            required = true)
     private final Architecture architecture;
 
     @Schema(
-        name = IMAGE_TYPE_NAME,
-        implementation = ImageType.class,
-        required = true)
+            name = IMAGE_TYPE_NAME,
+            implementation = ImageType.class,
+            required = true)
     private final ImageType imageType;
 
     @Schema(
-        name = C_LIB_NAME,
-        implementation = CLib.class
+            name = C_LIB_NAME,
+            implementation = CLib.class
     )
     private final CLib cLib;
 
     @Schema(
-        implementation = JvmImpl.class,
-        name = JVM_IMPL_NAME,
-        required = true)
+            implementation = JvmImpl.class,
+            name = JVM_IMPL_NAME,
+            required = true)
     private final JvmImpl jvmImpl;
 
     @Schema(
-        implementation = Package.class, description = "Describes details of the archive",
-        name = PACKAGE_NAME,
-        required = false)
+            implementation = Package.class, description = "Describes details of the archive",
+            name = PACKAGE_NAME,
+            required = false)
     private final Package _package;
 
     @Schema(type = SchemaType.ARRAY,
-        description = "Describes details of the installer archive associated with this binary",
-        implementation = Installer.class,
-        required = false)
+            description = "Describes details of the installer archive associated with this binary",
+            implementation = Installer.class,
+            required = false)
     private final List<Installer> installer;
 
     @Schema(required = true, description = "Timestamp of the creation time of the binary")
     private final Date timestamp;
 
     @Schema(description = "Scm reference to the commit inside the vendors own repository upon which this build is based",
-        name = SCM_REF_NAME,
-        example = "dd28d6d2cde2b931caf94ac2422a2ad082ea62f0beee3bf7057317c53093de93",
-        required = false)
+            name = SCM_REF_NAME,
+            examples = "dd28d6d2cde2b931caf94ac2422a2ad082ea62f0beee3bf7057317c53093de93",
+            required = false)
     private final String scmRef;
 
     @Schema(description = "Scm reference to the commit inside the OpenJDK project, upon which this build is based",
-        name = OPENJDK_SCM_REF_NAME,
-        example = "dd28d6d2cde2b931caf94ac2422a2ad082ea62f0beee3bf7057317c53093de93",
-        required = true)
+            name = OPENJDK_SCM_REF_NAME,
+            examples = "dd28d6d2cde2b931caf94ac2422a2ad082ea62f0beee3bf7057317c53093de93",
+            required = true)
     private final String openjdkScmRef;
 
     @Schema(implementation = Distribution.class, required = true)
     private final Distribution distribution;
 
     @Schema(required = true,
-        name = AQAVIT_RESULTS_LINK_NAME,
-        description = "Link to the aquavit results details for this binary",
-        example = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz.aqavit.zip")
+            name = AQAVIT_RESULTS_LINK_NAME,
+            description = "Link to the aquavit results details for this binary",
+            examples = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17%2B35/OpenJDK17-jdk_x64_linux_hotspot_17_35.tar.gz.aqavit.zip")
     private final String aqavitResultsLink;
 
     @Schema(required = false,
-        name = TCK_AFFIDAVIT_LINK_NAME,
-        example = "https://adoptium.net/tck_affidavit.html",
-        description = "Link to the tck affidavit for this binary")
+            name = TCK_AFFIDAVIT_LINK_NAME,
+            examples = "https://adoptium.net/tck_affidavit.html",
+            description = "Link to the tck affidavit for this binary")
     private final String tckAffidavitLink;
 
     @JsonCreator
     public Binary(
-        @JsonProperty(value = OS_NAME, required = true) OperatingSystem os,
-        @JsonProperty(value = ARCHITECTURE_NAME, required = true) Architecture architecture,
-        @JsonProperty(value = IMAGE_TYPE_NAME, required = true) ImageType imageType,
-        @JsonProperty(C_LIB_NAME) CLib cLib,
-        @JsonProperty(value = JVM_IMPL_NAME, required = true) JvmImpl jvmImpl,
-        @JsonProperty(PACKAGE_NAME) Package aPackage,
-        @JsonProperty(INSTALLER_NAME) List<Installer> installer,
-        @JsonProperty(value = TIMESTAMP_NAME, required = true) Date timestamp,
-        @JsonProperty(SCM_REF_NAME) String scmRef,
-        @JsonProperty(value = OPENJDK_SCM_REF_NAME, required = true) String openjdkScmRef,
-        @JsonProperty(value = DISTRIBUTION_NAME, required = true) Distribution distribution,
-        @JsonProperty(value = AQAVIT_RESULTS_LINK_NAME, required = true) String aqavitResultsLink,
-        @JsonProperty(TCK_AFFIDAVIT_LINK_NAME) String tckAffidavitLink
+            @JsonProperty(value = OS_NAME, required = true) OperatingSystem os,
+            @JsonProperty(value = ARCHITECTURE_NAME, required = true) Architecture architecture,
+            @JsonProperty(value = IMAGE_TYPE_NAME, required = true) ImageType imageType,
+            @JsonProperty(C_LIB_NAME) CLib cLib,
+            @JsonProperty(value = JVM_IMPL_NAME, required = true) JvmImpl jvmImpl,
+            @JsonProperty(PACKAGE_NAME) Package aPackage,
+            @JsonProperty(INSTALLER_NAME) List<Installer> installer,
+            @JsonProperty(value = TIMESTAMP_NAME, required = true) Date timestamp,
+            @JsonProperty(SCM_REF_NAME) String scmRef,
+            @JsonProperty(value = OPENJDK_SCM_REF_NAME, required = true) String openjdkScmRef,
+            @JsonProperty(value = DISTRIBUTION_NAME, required = true) Distribution distribution,
+            @JsonProperty(value = AQAVIT_RESULTS_LINK_NAME, required = true) String aqavitResultsLink,
+            @JsonProperty(TCK_AFFIDAVIT_LINK_NAME) String tckAffidavitLink
     ) {
         this.os = os;
         this.architecture = architecture;

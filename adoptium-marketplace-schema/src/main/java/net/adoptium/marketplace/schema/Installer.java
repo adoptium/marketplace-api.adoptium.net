@@ -7,7 +7,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 public class Installer extends Asset {
 
     public static final String INSTALLER_TYPE_NAME = "installer_type";
-    @Schema(example = "msi", description = "Type of the installer, i.e exe, msi, deb, dmg")
+    @Schema(examples = "msi", description = "Type of the installer, i.e exe, msi, deb, dmg")
     private final String installerType;
 
     public Installer(
