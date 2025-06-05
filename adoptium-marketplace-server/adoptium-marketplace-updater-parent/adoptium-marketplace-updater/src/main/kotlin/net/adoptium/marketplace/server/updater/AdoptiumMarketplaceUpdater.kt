@@ -81,6 +81,7 @@ open class AdoptiumMarketplaceUpdater @Inject constructor(
         runBlocking {
             clients
                 .keys
+                .filter { !Vendor.NO_LONGER_SUPPORTED_VENDORS.contains(it) }
                 .forEach { vendor ->
                     val newReleases = update(vendor)
                     logInfoAboutUpdate(vendor, newReleases)
