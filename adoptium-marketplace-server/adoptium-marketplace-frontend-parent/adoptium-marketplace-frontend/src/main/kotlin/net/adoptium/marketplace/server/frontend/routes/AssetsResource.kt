@@ -28,6 +28,8 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
+import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 @Tag(name = "Assets")
 @Path("/v1/assets/")
@@ -62,10 +64,10 @@ constructor(
 
         @Parameter(
             name = "feature_version", description = OpenApiDocs.FEATURE_RELEASE, required = true,
-            schema = Schema(defaultValue = "8", type = SchemaType.INTEGER)
+            schema = Schema(examples = ["8"], type = SchemaType.INTEGER)
         )
         @PathParam("feature_version")
-        version: Int?,
+        version: Int,
 
         @Parameter(name = "os", description = "Operating System", required = false)
         @QueryParam("os")
@@ -101,29 +103,33 @@ constructor(
             schema = Schema(defaultValue = defaultPageSize, maximum = maxPageSize, type = SchemaType.INTEGER),
             required = false
         )
+        @DefaultValue(defaultPageSize)
         @QueryParam("page_size")
-        pageSize: Int?,
+        pageSize: Int,
 
         @Parameter(
             name = "page", description = "Pagination page number",
             schema = Schema(defaultValue = "0", type = SchemaType.INTEGER), required = false
         )
+        @DefaultValue("0")
         @QueryParam("page")
-        page: Int?,
+        page: Int,
 
         @Parameter(name = "sort_order", description = "Result sort order", required = false)
         @QueryParam("sort_order")
-        sortOrder: SortOrder?,
+        @DefaultValue(SortOrder.DEFAULT_SORT_ORDER)
+        sortOrder: SortOrder,
 
         @Parameter(name = "sort_method", description = "Result sort method", required = false)
         @QueryParam("sort_method")
-        sortMethod: SortMethod?
+        @DefaultValue(SortMethod.DEFAULT_SORT_METHOD)
+        sortMethod: SortMethod
 
     ): List<Release> {
 
         return runBlocking {
-            val order = sortOrder ?: SortOrder.DESC
-            val releaseSortMethod = sortMethod ?: SortMethod.DEFAULT
+            val order = sortOrder
+            val releaseSortMethod = sortMethod
 
             val releaseFilter = ReleaseFilter(featureVersion = version)
             val binaryFilter = BinaryFilter(os, arch, image_type, jvm_impl, before, cLib)
@@ -158,7 +164,7 @@ constructor(
 
         @Parameter(name = "release_name", description = "Name of the release i.e ", required = true)
         @PathParam("release_name")
-        releaseName: String?,
+        releaseName: String,
 
         @Parameter(name = "os", description = "Operating System", required = false)
         @QueryParam("os")
@@ -181,7 +187,7 @@ constructor(
         jvm_impl: JvmImpl?
     ): Release {
         return runBlocking {
-            if (releaseName == null || releaseName.trim().isEmpty()) {
+            if (releaseName.trim().isEmpty()) {
                 throw BadRequestException("Must provide a releaseName")
             }
 
@@ -255,7 +261,7 @@ constructor(
 
         @Parameter(name = "lts", description = "Include only LTS releases", required = false)
         @QueryParam("lts")
-        lts: Boolean?,
+        lts: Optional<Boolean>,
 
         @Parameter(
             name = "page_size",
@@ -263,23 +269,27 @@ constructor(
             schema = Schema(defaultValue = defaultPageSize, maximum = maxPageSize, type = SchemaType.INTEGER),
             required = false
         )
+        @DefaultValue(defaultPageSize)
         @QueryParam("page_size")
-        pageSize: Int?,
+        pageSize: Int,
 
         @Parameter(
             name = "page", description = "Pagination page number",
             schema = Schema(defaultValue = "0", type = SchemaType.INTEGER), required = false
         )
+        @DefaultValue("0")
         @QueryParam("page")
-        page: Int?,
+        page: Int,
 
         @Parameter(name = "sort_order", description = "Result sort order", required = false)
         @QueryParam("sort_order")
-        sortOrder: SortOrder?,
+        @DefaultValue(SortOrder.DEFAULT_SORT_ORDER)
+        sortOrder: SortOrder,
 
         @Parameter(name = "sort_method", description = "Result sort method", required = false)
         @QueryParam("sort_method")
-        sortMethod: SortMethod?
+        @DefaultValue(SortMethod.DEFAULT_SORT_METHOD)
+        sortMethod: SortMethod
     ): List<Release> {
         return runBlocking {
             val releases = releaseEndpoint.getReleases(
@@ -287,7 +297,7 @@ constructor(
                 sortOrder,
                 sortMethod,
                 version,
-                lts,
+                lts.getOrNull(),
                 os,
                 arch,
                 image_type,
@@ -319,7 +329,7 @@ constructor(
 
         @Parameter(
             name = "feature_version", description = OpenApiDocs.FEATURE_RELEASE, required = true,
-            schema = Schema(defaultValue = "8", type = SchemaType.INTEGER)
+            schema = Schema(examples = ["8"], type = SchemaType.INTEGER)
         )
         @PathParam("feature_version")
         version: Int,
@@ -367,33 +377,34 @@ constructor(
 
         @Parameter(name = "os", description = "Operating System", required = false)
         @QueryParam("os")
-        os: List<OperatingSystem>?,
+        os: Optional<List<OperatingSystem>>,
 
         @Parameter(name = "architecture", description = "Architecture", required = false)
         @QueryParam("architecture")
-        arch: List<Architecture>?,
+        arch: Optional<List<Architecture>>,
 
         @Parameter(name = "image_type", description = "Image Type", required = false)
         @QueryParam("image_type")
-        image_type: List<ImageType>?,
+        image_type: Optional<List<ImageType>>,
 
         @Parameter(name = "feature_version", description = OpenApiDocs.FEATURE_RELEASE, required = false)
         @QueryParam("feature_version")
-        version: List<Int>?
+        version: Optional<List<Int>>
 
     ): List<BinaryAssetView> {
 
         return runBlocking {
-            val versions = if (version == null || version.isEmpty()) {
+            val versions = if (version.isEmpty || version.get().isEmpty()) {
                 apiDataStore.getReleases(Vendor.adoptium).getReleaseInfo().available_releases.toList()
             } else {
-                version
+                version.getOrNull()
             }
 
             return@runBlocking vendors
                 .flatMap { vendor ->
                     val releaseFilter = ReleaseFilterMultiple(versions, null, listOf(vendor), null)
-                    val binaryFilter = BinaryFilterMultiple(os, arch, image_type, null, null, null)
+                    val binaryFilter =
+                        BinaryFilterMultiple(os.getOrNull(), arch.getOrNull(), image_type.getOrNull(), null, null, null)
 
                     releaseEndpoint.getReleases(vendor, releaseFilter, binaryFilter, SortOrder.ASC, SortMethod.DEFAULT)
                 }

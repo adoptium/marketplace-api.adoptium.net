@@ -10,4 +10,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema
 enum class SortMethod {
     DEFAULT,
     DATE;
+
+    companion object {
+        const val DEFAULT_SORT_METHOD: String = "DEFAULT"
+    }
 }

@@ -7,4 +7,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema
 enum class SortOrder {
     ASC,
     DESC;
+
+    companion object {
+        const val DEFAULT_SORT_ORDER: String = "DESC"
+    }
 }

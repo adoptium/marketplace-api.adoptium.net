@@ -29,11 +29,11 @@ public class IndexFile {
     public static final String SCHEMA_VERSION_NAME = "schema_version";
     public static final String LATEST_VERSION = "1.0.0";
     @Schema(
-        implementation = JvmImpl.class,
-        name = SCHEMA_VERSION_NAME,
-        defaultValue = LATEST_VERSION,
-        example = LATEST_VERSION,
-        required = true)
+            implementation = JvmImpl.class,
+            name = SCHEMA_VERSION_NAME,
+            defaultValue = LATEST_VERSION,
+            examples = {LATEST_VERSION},
+            required = true)
     private final String schemaVersion;
 
     // Relative path to another index file, links to further index files
@@ -44,9 +44,9 @@ public class IndexFile {
 
     @JsonCreator
     public IndexFile(
-        @JsonProperty(value = SCHEMA_VERSION_NAME) String schemaVersion,
-        @JsonProperty(value = "indexes") List<String> indexes,
-        @JsonProperty(value = "releases") List<String> releases) {
+            @JsonProperty(value = SCHEMA_VERSION_NAME) String schemaVersion,
+            @JsonProperty(value = "indexes") List<String> indexes,
+            @JsonProperty(value = "releases") List<String> releases) {
         this.schemaVersion = schemaVersion;
         this.indexes = indexes;
         this.releases = releases;
