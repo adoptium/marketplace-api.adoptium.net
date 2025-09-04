@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 @Schema(
         type = SchemaType.STRING,
         enumeration = {
-                "adoptium", "redhat", "alibaba", "ibm", "microsoft", "azul"
+                "adoptium", "alibaba", "ibm", "microsoft", "azul"
         },
 
         description = """
@@ -19,6 +19,7 @@ import java.util.stream.Stream;
                 
                 <ul>
                     <li><b>huawei</b> - Huawei OpenJDK</li>
+                    <li><b>redhat</b> - Red Hat OpenJDK</li>
                 </ul>
                 """)
 public enum Vendor {
@@ -44,7 +45,7 @@ public enum Vendor {
                     .map(Vendor::valueOf)
                     .toList();
         } else {
-            return List.of(Vendor.huawei);
+            return List.of(Vendor.huawei, Vendor.redhat);
         }
     }
 }
