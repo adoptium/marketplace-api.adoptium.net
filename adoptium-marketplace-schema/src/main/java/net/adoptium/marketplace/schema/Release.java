@@ -18,22 +18,22 @@ public class Release {
     public static final String LAST_UPDATED_TIMESTAMP_NAME = "last_updated_timestamp";
 
     @Schema(
-        example = "https://github.com/AdoptOpenJDK/openjdk8-openj9-releases/ga/tag/jdk8u162-b12_openj9-0.8.0",
-        name = RELEASE_LINK_NAME
+            examples = "https://github.com/AdoptOpenJDK/openjdk8-openj9-releases/ga/tag/jdk8u162-b12_openj9-0.8.0",
+            name = RELEASE_LINK_NAME
     )
     private final String releaseLink;
 
     @Schema(
-        example = "jdk8u162-b12_openj9-0.8.0",
-        required = true,
-        name = RELEASE_NAME_NAME
+            examples = "jdk8u162-b12_openj9-0.8.0",
+            required = true,
+            name = RELEASE_NAME_NAME
     )
     private final String releaseName;
 
     @Schema(
-        name = LAST_UPDATED_TIMESTAMP_NAME,
-        description = "Timestamp of the release creation",
-        required = true
+            name = LAST_UPDATED_TIMESTAMP_NAME,
+            description = "Timestamp of the release creation",
+            required = true
     )
     private final Date lastUpdatedTimestamp;
 
@@ -49,23 +49,23 @@ public class Release {
     private final SourcePackage source;
 
     @Schema(
-        required = false,
-        name = VENDOR_PUBLIC_KEY_LINK_NAME,
-        description = "Link to the public key which has been used to sign binaries within this release IF signature links are provided",
-        example = "https://adoptium.net/publickey.asc"
+            required = false,
+            name = VENDOR_PUBLIC_KEY_LINK_NAME,
+            description = "Link to the public key which has been used to sign binaries within this release IF signature links are provided",
+            examples = "https://adoptium.net/publickey.asc"
     )
     private final String vendorPublicKeyLink;
 
     @JsonCreator
     public Release(
-        @JsonProperty(RELEASE_LINK_NAME) String releaseLink,
-        @JsonProperty(value = RELEASE_NAME_NAME, required = true) String releaseName,
-        @JsonProperty(value = LAST_UPDATED_TIMESTAMP_NAME, required = true) Date lastUpdatedTimestamp,
-        @JsonProperty("binaries") List<Binary> binaries,
-        @JsonProperty(value = "vendor", required = true) Vendor vendor,
-        @JsonProperty(value = VERSION_DATA_NAME, required = true) OpenjdkVersionData openjdkVersionData,
-        @JsonProperty("source") SourcePackage source,
-        @JsonProperty(VENDOR_PUBLIC_KEY_LINK_NAME) String vendorPublicKeyLink
+            @JsonProperty(RELEASE_LINK_NAME) String releaseLink,
+            @JsonProperty(value = RELEASE_NAME_NAME, required = true) String releaseName,
+            @JsonProperty(value = LAST_UPDATED_TIMESTAMP_NAME, required = true) Date lastUpdatedTimestamp,
+            @JsonProperty("binaries") List<Binary> binaries,
+            @JsonProperty(value = "vendor", required = true) Vendor vendor,
+            @JsonProperty(value = VERSION_DATA_NAME, required = true) OpenjdkVersionData openjdkVersionData,
+            @JsonProperty("source") SourcePackage source,
+            @JsonProperty(VENDOR_PUBLIC_KEY_LINK_NAME) String vendorPublicKeyLink
     ) {
         this.releaseLink = releaseLink;
         this.releaseName = releaseName;
@@ -78,18 +78,18 @@ public class Release {
     }
 
     public Release(
-        Release release,
-        List<Binary> binaries
+            Release release,
+            List<Binary> binaries
     ) {
         this(
-            release.releaseLink,
-            release.releaseName,
-            release.lastUpdatedTimestamp,
-            binaries,
-            release.vendor,
-            release.openjdkVersionData,
-            release.source,
-            release.vendorPublicKeyLink
+                release.releaseLink,
+                release.releaseName,
+                release.lastUpdatedTimestamp,
+                binaries,
+                release.vendor,
+                release.openjdkVersionData,
+                release.source,
+                release.vendorPublicKeyLink
         );
     }
 
@@ -134,13 +134,13 @@ public class Release {
     @Override
     public String toString() {
         return "Release{" +
-            "releaseLink='" + releaseLink + '\'' +
-            ", releaseName='" + releaseName + '\'' +
-            ", lastUpdatedTimestamp=" + lastUpdatedTimestamp +
-            ", vendor=" + vendor +
-            ", openjdkVersionData=" + openjdkVersionData +
-            ", source=" + source +
-            ", vendorPublicKeyLink='" + vendorPublicKeyLink + '\'' +
-            '}';
+                "releaseLink='" + releaseLink + '\'' +
+                ", releaseName='" + releaseName + '\'' +
+                ", lastUpdatedTimestamp=" + lastUpdatedTimestamp +
+                ", vendor=" + vendor +
+                ", openjdkVersionData=" + openjdkVersionData +
+                ", source=" + source +
+                ", vendorPublicKeyLink='" + vendorPublicKeyLink + '\'' +
+                '}';
     }
 }

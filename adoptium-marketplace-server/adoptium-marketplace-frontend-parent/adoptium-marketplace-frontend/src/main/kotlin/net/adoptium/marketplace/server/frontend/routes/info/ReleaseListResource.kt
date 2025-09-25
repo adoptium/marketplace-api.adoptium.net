@@ -19,6 +19,8 @@ import org.eclipse.microprofile.openapi.annotations.enums.SchemaType
 import org.eclipse.microprofile.openapi.annotations.media.Schema
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @Tag(name = "Release Info")
 @Path("/v1/info")
@@ -40,7 +42,7 @@ constructor(
 
         @Parameter(name = "version", description = OpenApiDocs.VERSION_RANGE, required = false)
         @QueryParam("version")
-        version: String?,
+        version: Optional<String>,
 
         @Parameter(name = "os", description = "Operating System", required = false)
         @QueryParam("os")
@@ -64,7 +66,7 @@ constructor(
 
         @Parameter(name = "lts", description = "Include only LTS releases", required = false)
         @QueryParam("lts")
-        lts: Boolean?,
+        lts: Optional<Boolean>,
 
         @Parameter(
             name = "page_size",
@@ -76,8 +78,9 @@ constructor(
             ),
             required = false
         )
+        @DefaultValue(Pagination.defaultPageSize)
         @QueryParam("page_size")
-        pageSize: Int?,
+        pageSize: Int,
 
         @Parameter(
             name = "page",
@@ -85,24 +88,27 @@ constructor(
             schema = Schema(defaultValue = "0", type = SchemaType.INTEGER),
             required = false
         )
+        @DefaultValue("0")
         @QueryParam("page")
-        page: Int?,
+        page: Int,
 
         @Parameter(name = "sort_order", description = "Result sort order", required = false)
         @QueryParam("sort_order")
-        sortOrder: SortOrder?,
+        @DefaultValue(SortOrder.DEFAULT_SORT_ORDER)
+        sortOrder: SortOrder,
 
         @Parameter(name = "sort_method", description = "Result sort method", required = false)
         @QueryParam("sort_method")
-        sortMethod: SortMethod?
+        @DefaultValue(SortMethod.DEFAULT_SORT_METHOD)
+        sortMethod: SortMethod
     ): ReleaseNameList {
         return runBlocking {
             val releases = releaseEndpoint.getReleases(
                 vendor,
                 sortOrder,
                 sortMethod,
-                version,
-                lts,
+                version.getOrNull(),
+                lts.getOrNull(),
                 os,
                 arch,
                 image_type,
@@ -128,7 +134,7 @@ constructor(
 
         @Parameter(name = "version", description = OpenApiDocs.VERSION_RANGE, required = false)
         @QueryParam("version")
-        version: String?,
+        version: Optional<String>,
 
         @Parameter(name = "os", description = "Operating System", required = false)
         @QueryParam("os")
@@ -152,7 +158,7 @@ constructor(
 
         @Parameter(name = "lts", description = "Include only LTS releases", required = false)
         @QueryParam("lts")
-        lts: Boolean?,
+        lts: Optional<Boolean>,
 
         @Parameter(
             name = "page_size",
@@ -164,8 +170,9 @@ constructor(
             ),
             required = false
         )
+        @DefaultValue(Pagination.defaultPageSize)
         @QueryParam("page_size")
-        pageSize: Int?,
+        pageSize: Int,
 
         @Parameter(
             name = "page",
@@ -173,16 +180,19 @@ constructor(
             schema = Schema(defaultValue = "0", type = SchemaType.INTEGER),
             required = false
         )
+        @DefaultValue("0")
         @QueryParam("page")
-        page: Int?,
+        page: Int,
 
         @Parameter(name = "sort_order", description = "Result sort order", required = false)
         @QueryParam("sort_order")
-        sortOrder: SortOrder?,
+        @DefaultValue(SortOrder.DEFAULT_SORT_ORDER)
+        sortOrder: SortOrder,
 
         @Parameter(name = "sort_method", description = "Result sort method", required = false)
         @QueryParam("sort_method")
-        sortMethod: SortMethod?
+        @DefaultValue(SortMethod.DEFAULT_SORT_METHOD)
+        sortMethod: SortMethod
 
     ): ReleaseVersionList {
         return runBlocking {
@@ -190,8 +200,8 @@ constructor(
                 vendor,
                 sortOrder,
                 sortMethod,
-                version,
-                lts,
+                version.getOrNull(),
+                lts.getOrNull(),
                 os,
                 arch,
                 image_type,

@@ -17,7 +17,7 @@ inputs:
 runs:
   using: composite
   steps:
-  - uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v4.7.0
+  - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
     with:
       java-version: 21
       distribution: temurin
@@ -30,7 +30,7 @@ runs:
     working-directory: ${{ inputs.WORKING_DIRECTORY }}/api.adoptium.net
 
   - name: Cache api.adoptium.net packages
-    uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+    uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
     id: cache-api
     with:
       path: ~/.m2/repository/net/adoptium/api

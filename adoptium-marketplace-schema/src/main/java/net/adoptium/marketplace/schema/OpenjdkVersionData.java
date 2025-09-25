@@ -19,7 +19,7 @@ public class OpenjdkVersionData implements Comparable<OpenjdkVersionData> {
     private final Optional<String> pre;
     private final Optional<String> optional;
 
-    @Schema(example = "11.0.4+10-201907081820")
+    @Schema(examples = "11.0.4+10-201907081820")
     private final String openjdk_version;
 
 
