@@ -13,7 +13,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
-        <quarkus.version>3.28.0</quarkus.version>
+        <quarkus.version>3.28.2</quarkus.version>
         <jacoco.version>0.8.13</jacoco.version>
         <kotlin.version>2.2.20</kotlin.version>
         <adoptiumVersion>3.0.1-SNAPSHOT</adoptiumVersion>
@@ -98,7 +98,7 @@
             <dependency>
                 <groupId>com.microsoft.azure</groupId>
                 <artifactId>applicationinsights-runtime-attach</artifactId>
-                <version>3.7.4</version>
+                <version>3.7.5</version>
             </dependency>
             <dependency>
                 <groupId>io.opentelemetry</groupId>
@@ -108,7 +108,7 @@
             <dependency>
                 <groupId>io.mockk</groupId>
                 <artifactId>mockk</artifactId>
-                <version>1.14.5</version>
+                <version>1.14.6</version>
             </dependency>
 
             <dependency>
