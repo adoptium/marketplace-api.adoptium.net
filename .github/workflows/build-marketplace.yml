@@ -31,19 +31,19 @@ jobs:
         SKIP_TESTS: false
 
     - name: Upload yaml schema
-      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       with:
         name: schema.yaml
         path: adoptium-marketplace-schema/target/generated/openapi.yaml
 
     - name: Upload json schema
-      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       with:
         name: schema.json
         path: adoptium-marketplace-schema/target/generated/openapi.json
 
     - name: Upload example data
-      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
       with:
         name: example.json
         path: adoptium-marketplace-schema-tests/src/test/resources/net/adoptium/marketplace/schema/example.json
