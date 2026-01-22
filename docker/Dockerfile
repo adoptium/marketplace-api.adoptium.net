@@ -1,6 +1,6 @@
 ######################################################
 ## Build
-FROM eclipse-temurin:21-jammy as build
+FROM eclipse-temurin:25-jammy as build
 
 
 RUN     mkdir /tmp/build
@@ -25,7 +25,7 @@ RUN     cd api.adoptium.net && \
 
 ######################################################
 ## Build Deployment
-FROM eclipse-temurin:21-jammy
+FROM eclipse-temurin:25-jammy
 
 RUN     apt-get update && apt-get -y install openssl adduser && \
         useradd -ms /bin/bash api && \
