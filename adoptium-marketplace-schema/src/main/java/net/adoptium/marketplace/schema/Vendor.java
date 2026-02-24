@@ -19,11 +19,10 @@ import java.util.stream.Stream;
                 
                 <ul>
                     <li><b>huawei</b> - Huawei OpenJDK</li>
-                    <li><b>redhat</b> - Red Hat OpenJDK</li>
                 </ul>
                 """)
 public enum Vendor {
-    adoptium, redhat, alibaba, ibm, microsoft, azul, huawei;
+    adoptium, alibaba, ibm, microsoft, azul, huawei;
 
     /**
      * List of vendors that are no longer supported. These will no longer receive updates or new releases.
@@ -45,7 +44,7 @@ public enum Vendor {
                     .map(Vendor::valueOf)
                     .toList();
         } else {
-            return List.of(Vendor.huawei, Vendor.redhat);
+            return List.of(Vendor.huawei);
         }
     }
 }
