@@ -41,12 +41,12 @@ class MongoTest : BeforeAllCallback, AfterAllCallback {
 
     }
 
-    override fun beforeAll(p0: ExtensionContext?) {
+    override fun beforeAll(context: ExtensionContext) {
         System.setProperty("GITHUB_TOKEN", "stub-token")
         startFongo()
     }
 
-    override fun afterAll(p0: ExtensionContext?) {
+    override fun afterAll(context: ExtensionContext) {
         mongodExecutable!!.stop()
     }
 }
