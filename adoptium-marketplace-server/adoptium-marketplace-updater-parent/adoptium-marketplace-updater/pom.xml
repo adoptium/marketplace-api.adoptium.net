@@ -118,10 +118,6 @@
             <artifactId>quarkus-elytron-security-properties-file</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.quarkiverse.logging.logback</groupId>
-            <artifactId>quarkus-logging-logback</artifactId>
-        </dependency>
-        <dependency>
             <groupId>net.adoptium.marketplace.server</groupId>
             <artifactId>adoptium-marketplace-persistence</artifactId>
             <version>${project.version}</version>
