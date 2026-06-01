@@ -27,7 +27,7 @@ public class MarketplaceHttpClient {
 
     public static MarketplaceHttpClient build(SignatureVerifier signatureVerifier) throws Exception {
         HttpClient httpClient = new HttpClient();
-        httpClient.setFollowRedirects(true);
+        httpClient.setFollowRedirects(false);
         httpClient.start();
         return new MarketplaceHttpClient(httpClient, signatureVerifier);
     }
