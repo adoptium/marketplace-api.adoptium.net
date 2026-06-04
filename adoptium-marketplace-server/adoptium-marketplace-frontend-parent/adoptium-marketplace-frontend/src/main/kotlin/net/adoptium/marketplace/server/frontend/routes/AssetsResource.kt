@@ -21,6 +21,7 @@ import net.adoptium.marketplace.server.frontend.models.BinaryAssetView
 import net.adoptium.marketplace.server.frontend.models.SortMethod
 import net.adoptium.marketplace.server.frontend.models.SortOrder
 import org.eclipse.microprofile.openapi.annotations.Operation
+import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType
 import org.eclipse.microprofile.openapi.annotations.media.Content
 import org.eclipse.microprofile.openapi.annotations.media.Schema
@@ -57,14 +58,14 @@ constructor(
             APIResponse(responseCode = "400", description = "bad input parameter")
         ]
     )
-    fun get(
-        @Parameter(name = "vendor", description = OpenApiDocs.VENDOR, required = true)
+    fun getFeatureReleases(
+        @Parameter(name = "vendor", description = OpenApiDocs.VENDOR, required = true, `in` = ParameterIn.PATH)
         @PathParam("vendor")
         vendor: Vendor,
 
         @Parameter(
             name = "feature_version", description = OpenApiDocs.FEATURE_RELEASE, required = true,
-            schema = Schema(examples = ["8"], type = SchemaType.INTEGER)
+            schema = Schema(examples = ["8"], type = SchemaType.INTEGER), `in` = ParameterIn.PATH
         )
         @PathParam("feature_version")
         version: Int,
@@ -157,7 +158,7 @@ constructor(
             APIResponse(responseCode = "500", description = "multiple releases match the request")
         ]
     )
-    fun get(
+    fun getReleaseByName(
         @Parameter(name = "vendor", description = OpenApiDocs.VENDOR, required = true)
         @PathParam("vendor")
         vendor: Vendor,
