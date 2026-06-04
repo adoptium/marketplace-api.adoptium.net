@@ -13,9 +13,12 @@ class AssetsResourceOpenApiTest {
     fun `feature release endpoint marks path params as path params`() {
         val method = AssetsResource::class.java.declaredMethods.single { it.name == "getFeatureReleases" }
 
-        val vendorAnnotation = method.parameters[0].getAnnotation(Parameter::class.java)
-        val featureVersionAnnotation = method.parameters[1].getAnnotation(Parameter::class.java)
+        val vendorParam = method.parameters.single { it.getAnnotation(jakarta.ws.rs.PathParam::class.java)?.value == "vendor" }
+        val featureVersionParam =
+            method.parameters.single { it.getAnnotation(jakarta.ws.rs.PathParam::class.java)?.value == "feature_version" }
 
+        val vendorAnnotation = checkNotNull(vendorParam.getAnnotation(Parameter::class.java)) { "@Parameter missing on vendor param" }
+        val featureVersionAnnotation = checkNotNull(featureVersionParam.getAnnotation(Parameter::class.java)) { "@Parameter missing on feature_version param" }
         assertEquals("vendor", vendorAnnotation.name)
         assertEquals(ParameterIn.PATH, vendorAnnotation.`in`)
         assertEquals("feature_version", featureVersionAnnotation.name)
