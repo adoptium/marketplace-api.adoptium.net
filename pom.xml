@@ -9,10 +9,14 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <java.version>17</java.version>
-        <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
+        <jdk.version>25</jdk.version>
+        <maven.compiler.release>25</maven.compiler.release>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+        <maven.compiler.testSource>25</maven.compiler.testSource>
+        <maven.compiler.testTarget>25</maven.compiler.testTarget>
+        <java.version>25</java.version>
+        <kotlin.compiler.jvmTarget>25</kotlin.compiler.jvmTarget>
         <quarkus.version>3.38.2</quarkus.version>
         <jacoco.version>0.8.15</jacoco.version>
         <kotlin.version>2.4.10</kotlin.version>
