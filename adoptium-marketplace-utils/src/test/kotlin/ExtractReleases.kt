@@ -1,4 +1,4 @@
-import tools.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.readValue
 import net.adoptium.api.v3.JsonMapper
 import net.adoptium.api.v3.models.Release
 import net.adoptium.api.v3.parser.VersionParser
