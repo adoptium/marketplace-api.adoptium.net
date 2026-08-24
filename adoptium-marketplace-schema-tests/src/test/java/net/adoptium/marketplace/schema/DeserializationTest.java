@@ -1,12 +1,13 @@
 package net.adoptium.marketplace.schema;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.adoptium.marketplace.client.MarketplaceMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.time.Instant;
 
 public class DeserializationTest {
 
@@ -38,14 +39,19 @@ public class DeserializationTest {
     }
 
     @Test
-    public void canSerializeThenDeserialize() throws JsonProcessingException {
+    public void canSerializeThenDeserialize() throws IOException {
 
         ObjectMapper mapper = MarketplaceMapper.repositoryObjectMapper;
 
         String serialized = mapper.writeValueAsString(RepoGenerator.generate(""));
+        JsonNode release = mapper.readTree(serialized).get("releases").get(0);
+        JsonNode versionData = release.get("openjdk_version_data");
 
         ReleaseList deserialized = mapper.readValue(serialized, ReleaseList.class);
 
+        Assertions.assertDoesNotThrow(() -> Instant.parse(release.get("last_updated_timestamp").asText()));
+        Assertions.assertEquals(1, versionData.get("minor").asInt());
+        Assertions.assertEquals("foo", versionData.get("optional").asText());
         Assertions.assertNotNull(deserialized);
     }
 }
