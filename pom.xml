@@ -18,6 +18,7 @@
         <java.version>25</java.version>
         <kotlin.compiler.jvmTarget>25</kotlin.compiler.jvmTarget>
         <quarkus.version>3.38.2</quarkus.version>
+        <jackson.version>3.0.3</jackson.version>
         <jacoco.version>0.8.15</jacoco.version>
         <kotlin.version>2.4.10</kotlin.version>
         <adoptiumVersion>3.0.1-SNAPSHOT</adoptiumVersion>
@@ -42,6 +43,13 @@
                 <groupId>net.adoptium.api</groupId>
                 <artifactId>adoptium-api-v3</artifactId>
                 <version>${adoptiumVersion}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>tools.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
