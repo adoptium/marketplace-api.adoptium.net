@@ -17,7 +17,7 @@
         <maven.compiler.testTarget>25</maven.compiler.testTarget>
         <java.version>25</java.version>
         <kotlin.compiler.jvmTarget>25</kotlin.compiler.jvmTarget>
-        <quarkus.version>3.39.0</quarkus.version>
+        <quarkus.version>3.39.1</quarkus.version>
         <jacoco.version>0.8.15</jacoco.version>
         <kotlin.version>2.4.10</kotlin.version>
         <jackson.version>3.2.2</jackson.version>
