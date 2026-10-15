@@ -1,12 +1,11 @@
 package net.adoptium.marketplace.dataSources.persitence.mongo.codecs
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.databind.module.SimpleModule
+import tools.jackson.module.kotlin.KotlinFeature
+import tools.jackson.module.kotlin.jacksonMapperBuilder
 import org.bson.BsonReader
 import org.bson.BsonWriter
 import org.bson.RawBsonDocument
@@ -22,12 +21,12 @@ import java.util.*
 
 class JacksonCodecProvider : CodecProvider {
     companion object {
-        private val objectMapper: ObjectMapper = com.fasterxml.jackson.module.kotlin.jacksonObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .registerModule(JavaTimeModule())
-            .registerModule(Jdk8Module())
-            .registerModule(object : SimpleModule() {
+        private val objectMapper: ObjectMapper = jacksonMapperBuilder {
+            disable(KotlinFeature.StrictNullChecks)
+        }
+            .changeDefaultPropertyInclusion { it.withValueInclusion(JsonInclude.Include.NON_NULL) }
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .addModule(object : SimpleModule() {
                 init {
                     addDeserializer(ZonedDateTime::class.java, ZonedDateTimeCodecs.ZonedDateTimeDeserializer())
                     addSerializer(ZonedDateTime::class.java, ZonedDateTimeCodecs.ZonedDateTimeSerializer())
@@ -35,9 +34,10 @@ class JacksonCodecProvider : CodecProvider {
                     addSerializer(Date::class.java, DateCodecs.DateSerializer())
                 }
             })
+            .build()
     }
 
-    override fun <T : Any?> get(type: Class<T>, registry: CodecRegistry): Codec<T>? {
+    override fun <T> get(type: Class<T>, registry: CodecRegistry): Codec<T>? {
         if (type == RawBsonDocument::class.java) {
             return null
         }
