@@ -30,6 +30,32 @@ Tests rely on the data inside the `exampleRepositories` directory in order for t
 
 # Repository validation
 
+## Extended OpenJDK versions
+
+`openjdk_version_data` supports numeric version components after `patch` through
+the optional `additional_version_numbers` array. For example, `25.0.5.0.2+1` is
+represented as:
+
+```json
+{
+  "major": 25,
+  "minor": 0,
+  "security": 5,
+  "patch": 0,
+  "additional_version_numbers": [2],
+  "build": 1,
+  "openjdk_version": "25.0.5.0.2+1"
+}
+```
+
+When the array is absent, null, or empty, the components are extracted from
+`openjdk_version`. A non-empty explicit array takes precedence. Versions without
+additional components use an empty list, which is omitted when serialized.
+Additional components are compared numerically, in order, before prerelease and
+build information; a shorter matching sequence sorts before a longer one.
+
+## Validating a repository
+
 A repository can be validated using the `MarketplaceClient`. The client pulls a repository and validates its contents. For example:
 
 ```java
@@ -60,4 +86,3 @@ VALIDATE_REPO=true ../mvnw test -Dtest=RepoTest#validateRepo
 ```
 
 from inside the `adoptium-marketplace-client` directory.
-

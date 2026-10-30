@@ -17,9 +17,8 @@ object VersionParser {
     private val PRE_223_REGEX: Pattern = Pattern.compile(""".*?(?<version>1\.(?<major>[0-8])\.0(_(?<update>[0-9]+))?(-?(?<additional>.*))?).*?""")
 
     // Regexes based on those in http://openjdk.java.net/jeps/223
-    // Technically the standard supports an arbitrary number of numbers, we will support 3 for now
     private const val VNUM_REGEX =
-        """(?<major>[0-9]+)(\.(?<minor>[0-9]+))?(\.(?<security>[0-9]+))?(\.(?<patch>[0-9]+))?"""
+        """(?<![0-9.])(?<major>[0-9]+)(\.(?<minor>[0-9]+))?(\.(?<security>[0-9]+))?(\.(?<patch>[0-9]+))?(?<extra>(\.[0-9]+)*)"""
     private const val OPT_REGEX = "(?<opt>[-a-zA-Z0-9\\.]+)"
     private const val PRE_REGEX = "(?<pre>[a-zA-Z0-9]+)"
     private const val BUILD_REGEX = "(?<build>[0-9]+)"
@@ -81,7 +80,7 @@ object VersionParser {
     private fun parseWithJavaClass(publishName: String, sanityCheck: Boolean): OpenjdkVersionData? {
 
         try {
-            val parsedVersion = Runtime.Version.parse(publishName.removePrefix("jdk"))
+            val parsedVersion = Runtime.Version.parse(publishName.removePrefix("jdk-").removePrefix("jdk"))
             val major = parsedVersion.feature()
             val minor = parsedVersion.interim()
             val security = parsedVersion.update()
@@ -90,7 +89,9 @@ object VersionParser {
             val opt = parsedVersion.optional().orElse(null)
             val pre = parsedVersion.pre().orElse(null)
 
-            val parsed = OpenjdkVersionData(major, minor, security, patch, pre, build, null, opt)
+            val parsed = OpenjdkVersionData(
+                major, minor, security, patch, pre, build, opt, parsedVersion.toString(), parsedVersion.version().drop(4)
+            )
             if (!sanityCheck || sanityCheck(parsed)) {
                 return parsed
             }
@@ -142,7 +143,7 @@ object VersionParser {
 
             val version = matched.group("version")
 
-            val parsed = OpenjdkVersionData(major, minor, security, null, null, build, version, opt)
+            val parsed = OpenjdkVersionData(major, minor, security, null, null, build, opt, version)
             if (!sanityCheck || sanityCheck(parsed)) {
                 return parsed
             }
@@ -159,10 +160,10 @@ object VersionParser {
             // TODO update me before 2062 and java 100 is released
             return false
         }
-        if (parsed.security.orElse(0) != 0 || parsed.build.orElse(0) != 0) {
+        if (parsed.security.orElse(0) != 0 || parsed.build.orElse(0) != 0 || parsed.additional_version_numbers.any { it != 0 }) {
             return true
         }
-        if (parsed.optional.get().matches(DATE_TIME_MATCHER)) {
+        if (parsed.optional.map { it.matches(DATE_TIME_MATCHER) }.orElse(false)) {
             return true
         }
         return false
@@ -183,6 +184,13 @@ object VersionParser {
                         null
                     }
 
+                    val extra = if (regex.pattern().contains("?<extra>")) matched.group("extra") else null
+                    val additionalNumbers = if (!extra.isNullOrEmpty()) {
+                        extra.removePrefix(".").split(".").map { it.toInt() }
+                    } else {
+                        emptyList()
+                    }
+
                     var pre: String? = null
                     if (regex.pattern().contains("pre") && matched.group("pre") != null) {
                         pre = matched.group("pre")
@@ -194,7 +202,7 @@ object VersionParser {
                     }
                     val version = matched.group("version")
 
-                    val parsed = OpenjdkVersionData(major, minor, security, patch, pre, build, version, opt)
+                    val parsed = OpenjdkVersionData(major, minor, security, patch, pre, build, opt, version, additionalNumbers)
                     if (!sanityCheck || sanityCheck(parsed)) {
                         return parsed
                     }

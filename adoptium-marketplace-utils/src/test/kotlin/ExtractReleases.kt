@@ -1,4 +1,5 @@
-import tools.jackson.module.kotlin.readValue
+
+import com.fasterxml.jackson.module.kotlin.readValue
 import net.adoptium.api.v3.JsonMapper
 import net.adoptium.api.v3.models.Release
 import net.adoptium.api.v3.parser.VersionParser
@@ -145,7 +146,7 @@ class ExtractReleases {
         // Possibly might need to check next page...one day
         val response = httpClient.GET(apiUrl(version))
 
-        val releases = JsonMapper.mapper.readValue<List<Release>>(response.content)
+        val releases = JsonMapper.mapper.readValue(response.content, Array<Release>::class.java)
 
         return releases
             .map { release ->

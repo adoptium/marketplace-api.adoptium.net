@@ -2,19 +2,40 @@ package net.adoptium.marketplace.schema;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OpenjdkVersionData implements Comparable<OpenjdkVersionData> {
+
+    private static final Pattern VNUM_PREFIX = Pattern.compile("^(?:jdk-?)?([0-9]+(?:\\.[0-9]+)*)(?=[-+]|$)");
+
+    public static final Comparator<OpenjdkVersionData> ADDITIONAL_NUMBERS_COMPARATOR = (left, right) -> {
+        List<Integer> a = left.additional_version_numbers;
+        List<Integer> b = right.additional_version_numbers;
+        for (int i = 0; i < Math.min(a.size(), b.size()); i++) {
+            int result = Integer.compare(a.get(i), b.get(i));
+            if (result != 0) {
+                return result;
+            }
+        }
+        return Integer.compare(a.size(), b.size());
+    };
 
     private final Integer major;
     private final Optional<Integer> minor;
     private final Optional<Integer> security;
     private final Optional<Integer> patch;
+    @Schema(description = "Numeric version components after PATCH, for example [2] in 25.0.5.0.2")
+    private final List<Integer> additional_version_numbers;
     private final Optional<Integer> build;
     private final Optional<String> pre;
     private final Optional<String> optional;
@@ -32,6 +53,18 @@ public class OpenjdkVersionData implements Comparable<OpenjdkVersionData> {
         "security": 1
       }
      */
+    public OpenjdkVersionData(
+        Integer major,
+        Integer minor,
+        Integer security,
+        Integer patch,
+        String pre,
+        Integer build,
+        String optional,
+        String openjdk_version) {
+        this(major, minor, security, patch, pre, build, optional, openjdk_version, null);
+    }
+
     @JsonCreator
     public OpenjdkVersionData(
         @JsonProperty("major") Integer major,
@@ -41,15 +74,36 @@ public class OpenjdkVersionData implements Comparable<OpenjdkVersionData> {
         @JsonProperty("pre") String pre,
         @JsonProperty("build") Integer build,
         @JsonProperty("optional") String optional,
-        @JsonProperty("openjdk_version") String openjdk_version) {
+        @JsonProperty("openjdk_version") String openjdk_version,
+        @JsonProperty("additional_version_numbers") List<Integer> additional_version_numbers) {
         this.major = major;
         this.minor = Optional.ofNullable(minor);
         this.security = Optional.ofNullable(security);
         this.patch = Optional.ofNullable(patch);
+        this.additional_version_numbers = additional_version_numbers == null || additional_version_numbers.isEmpty()
+            ? additionalVersionNumbersOf(openjdk_version)
+            : List.copyOf(additional_version_numbers);
+        if (this.additional_version_numbers.stream().anyMatch(number -> number < 0)) {
+            throw new IllegalArgumentException("additional_version_numbers must not contain negative numbers");
+        }
         this.pre = Optional.ofNullable(pre);
         this.openjdk_version = openjdk_version;
         this.build = Optional.ofNullable(build);
         this.optional = Optional.ofNullable(optional);
+    }
+
+    private static List<Integer> additionalVersionNumbersOf(String openjdkVersion) {
+        if (openjdkVersion == null) {
+            return List.of();
+        }
+        Matcher matcher = VNUM_PREFIX.matcher(openjdkVersion);
+        if (!matcher.find()) {
+            return List.of();
+        }
+        return Arrays.stream(matcher.group(1).split("\\."))
+            .skip(4)
+            .map(Integer::valueOf)
+            .toList();
     }
 
     public Integer getMajor() {
@@ -66,6 +120,11 @@ public class OpenjdkVersionData implements Comparable<OpenjdkVersionData> {
 
     public Optional<Integer> getPatch() {
         return patch;
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public List<Integer> getAdditional_version_numbers() {
+        return additional_version_numbers;
     }
 
     public Optional<String> getPre() {
@@ -90,12 +149,12 @@ public class OpenjdkVersionData implements Comparable<OpenjdkVersionData> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OpenjdkVersionData that = (OpenjdkVersionData) o;
-        return Objects.equals(major, that.major) && Objects.equals(minor, that.minor) && Objects.equals(security, that.security) && Objects.equals(patch, that.patch) && Objects.equals(build, that.build) && Objects.equals(pre, that.pre) && Objects.equals(optional, that.optional) && Objects.equals(openjdk_version, that.openjdk_version);
+        return Objects.equals(major, that.major) && Objects.equals(minor, that.minor) && Objects.equals(security, that.security) && Objects.equals(patch, that.patch) && Objects.equals(additional_version_numbers, that.additional_version_numbers) && Objects.equals(build, that.build) && Objects.equals(pre, that.pre) && Objects.equals(optional, that.optional) && Objects.equals(openjdk_version, that.openjdk_version);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(major, minor, security, patch, build, pre, optional, openjdk_version);
+        return Objects.hash(major, minor, security, patch, additional_version_numbers, build, pre, optional, openjdk_version);
     }
 
     @Override
@@ -108,6 +167,8 @@ public class OpenjdkVersionData implements Comparable<OpenjdkVersionData> {
             return compare(security, openjdkVersionData.security, Integer::compare);
         } else if (compare(patch, openjdkVersionData.patch, Integer::compare) != 0) {
             return compare(patch, openjdkVersionData.patch, Integer::compare);
+        } else if (ADDITIONAL_NUMBERS_COMPARATOR.compare(this, openjdkVersionData) != 0) {
+            return ADDITIONAL_NUMBERS_COMPARATOR.compare(this, openjdkVersionData);
         } else if (compare(pre, openjdkVersionData.pre, OpenjdkVersionData::comparePre) != 0) {
             return compare(pre, openjdkVersionData.pre, OpenjdkVersionData::comparePre);
         } else if (compare(build, openjdkVersionData.build, Integer::compare) != 0) {
@@ -161,6 +222,7 @@ public class OpenjdkVersionData implements Comparable<OpenjdkVersionData> {
             ", minor=" + minor +
             ", security=" + security +
             ", patch=" + patch +
+            ", additional_version_numbers=" + additional_version_numbers +
             ", build=" + build +
             ", pre=" + pre +
             ", optional=" + optional +
