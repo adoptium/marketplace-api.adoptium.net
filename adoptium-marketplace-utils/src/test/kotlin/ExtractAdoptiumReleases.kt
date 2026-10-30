@@ -75,7 +75,8 @@ class ExtractAdoptiumReleases {
                 release.version_data.pre,
                 release.version_data.build,
                 release.version_data.optional,
-                release.version_data.openjdk_version
+                release.version_data.openjdk_version,
+                release.version_data.additional_version_numbers
             ),
             if (release.source != null) {
                 SourcePackage(

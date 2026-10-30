@@ -1,4 +1,4 @@
-import tools.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.readValue
 import net.adoptium.api.v3.JsonMapper
 import net.adoptium.api.v3.models.Release
 import net.adoptium.marketplace.client.MarketplaceMapper
@@ -123,7 +123,8 @@ class GenerateAdoptiumRepo {
                 release.version_data.pre,
                 release.version_data.build,
                 release.version_data.optional,
-                release.version_data.openjdk_version
+                release.version_data.openjdk_version,
+                release.version_data.additional_version_numbers
             ),
             if (release.source != null) {
                 SourcePackage(
