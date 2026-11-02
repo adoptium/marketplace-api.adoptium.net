@@ -8,8 +8,33 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 
 public class DeserializationTest {
+
+    @Test
+    public void preservesExtendedVersionsFromRepositoryData() {
+        var mapper = MarketplaceMapper.repositoryObjectMapper;
+        JsonNode repository = mapper.readTree(mapper.writeValueAsString(RepoGenerator.generate("")));
+        var versionData = repository.withObject("/releases/0/openjdk_version_data");
+        versionData.put("major", 25);
+        versionData.put("minor", 0);
+        versionData.put("security", 5);
+        versionData.put("patch", 0);
+        versionData.put("openjdk_version", "25.0.5.0.2+1");
+
+        for (boolean explicit : List.of(false, true)) {
+            if (explicit) {
+                versionData.putArray("additional_version_numbers").add(2);
+            }
+            ReleaseList releases = mapper.readValue(mapper.writeValueAsString(repository), ReleaseList.class);
+            Assertions.assertEquals(List.of(2), releases.getReleases().get(0).getOpenjdkVersionData().getAdditional_version_numbers());
+            ReleaseList roundTripped = mapper.readValue(mapper.writeValueAsString(releases), ReleaseList.class);
+            Assertions.assertEquals(
+                releases.getReleases().get(0).getOpenjdkVersionData(),
+                roundTripped.getReleases().get(0).getOpenjdkVersionData());
+        }
+    }
 
     @Test
     public void canDeserializeDocsWithTypo() throws IOException {

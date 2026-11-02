@@ -38,6 +38,7 @@ class VersionRangeFilter(range: String?) : Predicate<OpenjdkVersionData> {
                 version.build.orElse(null),
                 version.optional.orElse(null),
                 version.openjdk_version,
+                version.additional_version_numbers,
             )
         } else {
             version

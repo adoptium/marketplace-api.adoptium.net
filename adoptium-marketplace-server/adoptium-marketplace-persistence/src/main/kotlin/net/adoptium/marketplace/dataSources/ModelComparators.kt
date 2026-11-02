@@ -38,6 +38,7 @@ object ModelComparators {
         .thenBy { it?.minor?.orElse(null) }
         .thenBy { it?.optional?.orElse(null) }
         .thenBy { it?.patch?.orElse(null) }
+        .then(nullsFirst(OpenjdkVersionData.ADDITIONAL_NUMBERS_COMPARATOR))
         .thenBy { it?.pre?.orElse(null) }
         .thenBy { it?.security?.orElse(null) }
 
