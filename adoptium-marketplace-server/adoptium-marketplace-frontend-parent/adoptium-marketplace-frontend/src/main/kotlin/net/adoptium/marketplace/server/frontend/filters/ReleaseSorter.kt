@@ -27,6 +27,7 @@ class ReleaseSorter {
             .thenBy { it.minor.orElse(null) }
             .thenBy { it.security.orElse(null) }
             .thenBy { it.patch.orElse(null) }
+            .then(OpenjdkVersionData.ADDITIONAL_NUMBERS_COMPARATOR)
             .thenBy { it.pre.orElse(null) }
             .thenBy { it.build.orElse(null) }
             .thenBy { it.optional.orElse(null) }

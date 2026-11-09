@@ -4,9 +4,26 @@ import net.adoptium.marketplace.server.frontend.versions.VersionParser
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
+import org.junit.jupiter.api.Test
 import java.util.stream.Stream
 
 class VersionRangeTest {
+
+    @Test
+    fun `matches exact extended versions`() {
+        val matcher = VersionRange.parse("25.0.5.0.2+1")
+        Assertions.assertTrue(matcher.test(VersionParser.parse("25.0.5.0.2+1")))
+        Assertions.assertFalse(matcher.test(VersionParser.parse("25.0.5.0.3+1")))
+    }
+
+    @Test
+    fun `compares extended range boundaries numerically`() {
+        val matcher = VersionRange.parse("[25.0.5.0.2+1,25.0.5.0.10+1)")
+        Assertions.assertTrue(matcher.test(VersionParser.parse("25.0.5.0.2+1")))
+        Assertions.assertTrue(matcher.test(VersionParser.parse("25.0.5.0.3+1")))
+        Assertions.assertFalse(matcher.test(VersionParser.parse("25.0.5.0.1+1")))
+        Assertions.assertFalse(matcher.test(VersionParser.parse("25.0.5.0.10+1")))
+    }
 
     @TestFactory
     fun badRangeThrows(): Stream<DynamicTest> {

@@ -1,4 +1,5 @@
-import tools.jackson.module.kotlin.readValue
+package net.adoptium.marketplace.repo
+
 import net.adoptium.api.v3.JsonMapper
 import net.adoptium.api.v3.models.Release
 import net.adoptium.marketplace.client.MarketplaceMapper
@@ -67,7 +68,7 @@ class GenerateAdoptiumRepo {
                 // Possibly might need to check next page...one day
                 val response = httpClient.GET("https://api.adoptium.net/v3/assets/feature_releases/${version}/ga?page_size=50&vendor=eclipse")
 
-                val releases = JsonMapper.mapper.readValue<List<Release>>(response.content)
+                val releases = JsonMapper.mapper.readValue(response.content, Array<Release>::class.java).toList()
 
                 val marketplaceReleases = releases
                     .map { release ->
@@ -109,7 +110,7 @@ class GenerateAdoptiumRepo {
         .plus(".json")
 
     private fun toMarketplaceRelease(release: Release, binaries: List<Binary>): net.adoptium.marketplace.schema.Release {
-        return net.adoptium.marketplace.schema.Release(
+        return Release(
             release.release_link,
             release.release_name,
             Date.from(release.timestamp.dateTime.toInstant()),
@@ -123,7 +124,8 @@ class GenerateAdoptiumRepo {
                 release.version_data.pre,
                 release.version_data.build,
                 release.version_data.optional,
-                release.version_data.openjdk_version
+                release.version_data.openjdk_version,
+                release.version_data.additional_version_numbers
             ),
             if (release.source != null) {
                 SourcePackage(
