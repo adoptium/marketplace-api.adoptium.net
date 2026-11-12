@@ -3,7 +3,10 @@
 FROM eclipse-temurin:25-jammy as build
 
 
-RUN     mkdir /tmp/build
+RUN     apt-get update && \
+        apt-get install -y --no-install-recommends libcurl4 && \
+        rm -rf /var/lib/apt/lists/* && \
+        mkdir /tmp/build
 
 WORKDIR /tmp/build
 
