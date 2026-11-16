@@ -1,10 +1,8 @@
 name: Dependency Submission
 
-# Triggers the workflow on merging a PR
+# Submit dependencies for the main branch
 on:
-  pull_request:
-    types:
-      - closed
+  push:
     branches: [ "main" ]
 
 concurrency:
@@ -12,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
